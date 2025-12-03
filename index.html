@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GranáGo</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fuentes Google -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+            overflow-x: hidden; 
+        }
+
+        /* --- UI CUSTOM --- */
+        .service-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* --- ANIMACIONES --- */
+        .view-section {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        .view-section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- SCROLLBAR --- */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
+        
+        .normativa-title {
+            font-weight: 700;
+            display: block;
+            margin-bottom: 0.1rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-gray-800">
+
+    <!-- FONDO -->
+    <div class="fixed inset-0 bg-no-repeat bg-center bg-contain pointer-events-none opacity-15 -z-10" 
+         style="background-image: url('imagenes/Fondo.png');">
+    </div>
+
+    <!-- APP -->
+    <div id="app" class="w-full p-4 sm:p-6 md:p-8 flex-grow max-w-7xl mx-auto">
+
+        <!-- CABECERA -->
+        <header class="mb-8 pt-2 text-center border-b border-gray-200 pb-4">
+            <a href="#" onclick="event.preventDefault(); navigateTo('home')" class="inline-block transform hover:scale-105 transition duration-200">
+                <img src="imagenes/Logo.png" onerror="this.src='https://via.placeholder.com/150?text=GranáGo'" alt="GranáGo Logo" class="h-16 w-auto object-contain">
+            </a>
+        </header>
+
+        <!-- VISTA 1: HOME -->
+        <div id="home-view" class="view-section active">
+            <section>
+                <h2 class="text-xl font-semibold mb-6 text-center md:text-left">Servicios Principales</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                    <!-- Cards Generadas -->
+                    <div onclick="navigateTo('transporte')" class="service-card bg-white border border-gray-200 rounded-[1.25rem] cursor-pointer flex flex-col overflow-hidden shadow-lg group text-center">
+                        <div class="h-32 w-full overflow-hidden">
+                            <img src="imagenes/Transporte.png" onerror="this.src='https://via.placeholder.com/400x300?text=Bus+Metro'" class="h-full w-full object-cover group-hover:scale-110 transition duration-500">
+                        </div>
+                        <div class="p-4">
+                            <p class="font-extrabold text-lg leading-tight">TRANSPORTE EN TIEMPO REAL</p>
+                            <p class="text-xs text-gray-500 mt-1">Autobuses urbanos y Metro.</p>
+                        </div>
+                    </div>
+
+                    <div onclick="navigateTo('zbe')" class="service-card bg-white border border-gray-200 rounded-[1.25rem] cursor-pointer flex flex-col overflow-hidden shadow-lg group text-center">
+                        <div class="h-32 w-full overflow-hidden">
+                            <img src="imagenes/ZBE.png" onerror="this.src='https://via.placeholder.com/400x300?text=ZBE+Granada'" class="h-full w-full object-cover group-hover:scale-110 transition duration-500">
+                        </div>
+                        <div class="p-4">
+                            <p class="font-extrabold text-lg leading-tight">ZONA DE BAJAS EMISIONES</p>
+                            <p class="text-xs text-gray-500 mt-1">Plano, límites y normativa de la ZBE</p>
+                        </div>
+                    </div>
+
+                    <div onclick="navigateTo('ora')" class="service-card bg-white border border-gray-200 rounded-[1.25rem] cursor-pointer flex flex-col overflow-hidden shadow-lg group text-center">
+                        <div class="h-32 w-full overflow-hidden">
+                            <img src="imagenes/ORA.png" onerror="this.src='https://via.placeholder.com/400x300?text=ORA+Zona+Azul'" class="h-full w-full object-cover group-hover:scale-110 transition duration-500">
+                        </div>
+                        <div class="p-4">
+                            <p class="font-extrabold text-lg leading-tight">PARKING ORA</p>
+                            <p class="text-xs text-gray-500 mt-1">Zonas de Estacionamiento Limitado.</p>
+                        </div>
+                    </div>
+
+                    <div onclick="navigateTo('cortes')" class="service-card bg-white border border-gray-200 rounded-[1.25rem] cursor-pointer flex flex-col overflow-hidden shadow-lg group text-center">
+                        <div class="h-32 w-full overflow-hidden">
+                            <img src="imagenes/Eventos.png" onerror="this.src='https://via.placeholder.com/400x300?text=Obras+Trafico'" class="h-full w-full object-cover group-hover:scale-110 transition duration-500">
+                        </div>
+                        <div class="p-4">
+                            <p class="font-extrabold text-lg leading-tight">CORTES Y EVENTOS</p>
+                            <p class="text-xs text-gray-500 mt-1">Mapa con cortes actualizados.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- VISTA 2: TRANSPORTE -->
+        <div id="transporte-view" class="view-section">
+            <div class="flex items-center mb-6">
+                <button onclick="navigateTo('home')" class="mr-4 p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50 transition shadow-sm border border-gray-200">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                </button>
+                <h2 class="text-2xl font-bold">Transporte Público</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- BUS -->
+                <section class="bg-white p-6 rounded-3xl shadow-lg border-t-4 border-red-600">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <span class="bg-red-100 p-2 rounded-lg mr-3"><svg class="h-6 w-6 text-red-600" fill="currentColor" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4S4 2.5 4 6v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm-9-11c0-.55.45-1 1-1h8c.55 0 1 .45 1 1v4H6V6z"/></svg></span>
+                        Localiza tu Bus
+                    </h2>
+                    <div class="space-y-3">
+                        <input type="number" id="stop-code" placeholder="Ej: 1300 (Código Parada)" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none transition" pattern="[0-9]*">
+                        <button onclick="searchStop()" class="w-full bg-red-600 hover:bg-red-700 text-white p-3 rounded-xl font-bold transition shadow-md">BUSCAR BUSES</button>
+                    </div>
+                    <div id="bus-results" class="mt-4 space-y-3"></div>
+                </section>
+                
+                <!-- METRO -->
+                <section class="bg-white p-6 rounded-3xl shadow-lg border-t-4 border-green-600">
+                    <h2 class="text-xl font-bold mb-4 flex items-center">
+                        <span class="bg-green-100 p-2 rounded-lg mr-3"><svg class="h-6 w-6 text-green-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c-4 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2.23l2-2H14l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-3.58-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-7H6V6h5v4zm2 0V6h5v4h-5zm3.5 7c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg></span>
+                        Localiza tu Metro
+                    </h2>
+                    <div class="space-y-3">
+                        <select id="metro-stop-select" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none bg-white"><option value="">Cargando paradas...</option></select>
+                        <button onclick="searchMetroStop()" class="w-full bg-green-600 hover:bg-green-700 text-white p-3 rounded-xl font-bold transition shadow-md">BUSCAR METROS</button>
+                    </div>
+                    <div id="metro-results" class="mt-4 space-y-3"></div>
+                </section>
+            </div>
+        </div>
+
+        <!-- VISTA 3: ZBE (ACTUALIZADA: VISOR IMAGEN ZOOM) -->
+        <div id="zbe-view" class="view-section">
+            <div class="flex items-center mb-6">
+                <button onclick="navigateTo('home')" class="mr-4 p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50 transition shadow-sm border border-gray-200">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                </button>
+                <h2 class="text-2xl font-bold">Zona de Bajas Emisiones (ZBE)</h2>
+            </div>
+
+            <!-- VISOR IMAGEN INTERACTIVO -->
+            <div class="bg-white p-2 rounded-3xl shadow-lg mb-6 border border-gray-100 overflow-hidden">
+                <div id="zbe-map-container" class="w-full h-[500px] bg-gray-50 rounded-2xl relative overflow-hidden cursor-grab touch-none group">
+                    <!-- IMAGEN MAPA -->
+                    <img id="zbe-map-img" src="imagenes/zbeMapa.jpg" onerror="this.src='https://via.placeholder.com/800x600?text=Mapa+ZBE+(Carga+tu+imagen)'" alt="Plano ZBE" class="w-full h-full object-contain transition-transform duration-75 origin-center select-none" draggable="false">
+                    
+                    <!-- Controles Zoom Overlay -->
+                    <div class="absolute bottom-4 right-4 flex flex-col gap-2 z-10">
+                        <button onclick="adjustZoom(0.2)" class="bg-white p-2 rounded-full shadow-lg hover:bg-blue-50 text-gray-700 active:bg-blue-100 border border-gray-200 transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        </button>
+                        <button onclick="adjustZoom(-0.2)" class="bg-white p-2 rounded-full shadow-lg hover:bg-blue-50 text-gray-700 active:bg-blue-100 border border-gray-200 transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                        </button>
+                        <button onclick="resetZoom()" class="bg-white px-2 py-2 rounded-full shadow-lg hover:bg-red-50 text-red-600 font-bold text-xs active:bg-red-100 border border-gray-200 transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        </button>
+                    </div>
+                    <div class="absolute top-4 left-4 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-gray-600 border border-gray-200 pointer-events-none">
+                        Arrastra para mover
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-3xl shadow-lg p-6 border-l-4 border-blue-500">
+                    <h3 class="text-lg font-bold mb-4">📍 Calles de Acceso / Límite</h3>
+                    <ul class="text-sm space-y-3 text-gray-600 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                        <li><span class="normativa-title text-blue-600">ZONA ESTE:</span>Camino del Sacromonte (Abadía incluida). Cruce Restaurante El Caldero.</li>
+                        <li><span class="normativa-title text-blue-600">ZONA CARRETERA DE ALFACAR:</span>Coincide con perímetro urbano. Ciudad Deportiva <strong>INCLUIDA</strong>.</li>
+                        <li><span class="normativa-title text-blue-600">ZONA NORTE:</span>Calles Pegaso y Merced Alta <strong>NO INCLUIDAS</strong>.</li>
+                        <li><span class="normativa-title text-blue-600">ZONA NOROESTE:</span>Límite en Avd. Blas de Otero, C/ Lepanto, C/ Racimos.</li>
+                        <li><span class="normativa-title text-blue-600">ZONA OESTE:</span>Borde Parque Alquerías, vía servicio autovía. Camino de Cañaveral <strong>INCLUIDO</strong>.</li>
+                        <li><span class="normativa-title text-blue-600">ZONA SUROESTE:</span>Ctra. Vegas del Genil hasta cruce con Río Monachil/Genil.</li>
+                        <li><span class="normativa-title text-blue-600">ZONA SUR:</span>Avd. Innovación <strong>INCLUIDA</strong>. Excluidas: Avd. Jesús Candel y accesos.</li>
+                        <li><span class="normativa-title text-blue-600">ZONA SURESTE:</span>Acceso a Alhambra (Avd. Santa María) y Cementerio <strong>LIBRES</strong>.</li>
+                        <li><span class="normativa-title text-red-500">VÍAS EXCLUIDAS (LIBRES):</span>Circunvalación (GR-30), Ronda Sur (A-395), Merced Alta.</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-3xl shadow-lg p-6 border-l-4 border-green-500">
+                    <h3 class="text-lg font-bold mb-4">📋 Normativa</h3>
+                    <div class="space-y-4 text-sm">
+                        <div class="bg-green-50 p-4 rounded-xl border border-green-100">
+                            <p class="font-bold text-green-800 mb-1">✅ Vehículos Permitidos</p>
+                            <p class="text-green-700">Etiqueta <strong>C, B, ECO y CERO</strong>. Vehículos empadronados en Granada (IVTM).</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                            <p class="font-bold text-red-800 mb-1">🚫 Restricciones</p>
+                            <p class="text-red-700">Vehículos <strong>sin etiqueta</strong> no residentes prohibidos en horario laboral.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 4: ORA -->
+        <div id="ora-view" class="view-section">
+            <div class="flex items-center mb-6">
+                <button onclick="navigateTo('home')" class="mr-4 p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50 transition shadow-sm border border-gray-200">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                </button>
+                <h2 class="text-2xl font-bold">Estacionamiento Regulado (ORA)</h2>
+            </div>
+            
+            <!-- Selector de Mapas -->
+            <div class="flex justify-center mb-4">
+                <div class="bg-gray-100 p-1 rounded-xl flex space-x-1 shadow-inner">
+                    <button onclick="switchOraMap('vias')" id="btn-map-vias" class="px-6 py-2 rounded-lg text-sm font-bold transition-all shadow bg-white text-blue-600">Mapa de Vías</button>
+                    <button onclick="switchOraMap('parquimetros')" id="btn-map-parq" class="px-6 py-2 rounded-lg text-sm font-bold text-gray-500 hover:text-gray-700 transition-all">Mapa Parquímetros</button>
+                </div>
+            </div>
+
+            <!-- Mapa Container -->
+            <div class="bg-white p-2 rounded-3xl shadow-lg mb-6 border border-gray-100 overflow-hidden relative h-[500px]">
+                <div id="map-vias" class="w-full h-full block">
+                    <iframe src="https://www.google.com/maps/d/embed?mid=1CqNCPMeQZcKjz3jQmiJreTeBzSNl_EhZ&ehbc=2E312F" width="100%" height="100%" class="border-0 rounded-2xl" loading="lazy"></iframe>
+                </div>
+                <div id="map-parquimetros" class="w-full h-full hidden">
+                    <iframe src="https://www.google.com/maps/d/embed?mid=1t89zrYQ1x-0jAyc98lr1O_EZTs4&ehbc=2E312F" width="100%" height="100%" class="border-0 rounded-2xl" loading="lazy"></iframe>
+                </div>
+            </div>
+
+            <!-- Horarios -->
+            <div class="bg-white p-6 rounded-3xl shadow-lg border border-gray-100 mb-6">
+                <h3 class="text-xl font-bold mb-4 flex items-center">
+                    <svg class="h-6 w-6 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Horarios
+                </h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-blue-50 p-5 rounded-2xl border border-blue-100 text-sm text-blue-800">
+                        <p class="font-bold text-blue-900 mb-2 text-base">❄️ Invierno (15 Sep - 15 Jun)</p>
+                        L-V: 9:00-14:00, 16:30-20:30 <br> Sáb: 9:00-14:00
+                    </div>
+                    <div class="bg-orange-50 p-5 rounded-2xl border border-orange-100 text-sm text-orange-800">
+                        <p class="font-bold text-orange-900 mb-2 text-base">☀️ Verano (16 Jun - 14 Sep)</p>
+                        L-V: 9:00-14:00, 17:00-21:00 <br> Sáb: 9:00-14:00
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarifas Actualizadas -->
+            <div class="grid md:grid-cols-3 gap-6 mb-6">
+                <!-- Zona Azul -->
+                <div class="bg-white p-5 rounded-3xl shadow-lg border-t-8 border-blue-500 text-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between font-bold text-lg text-gray-800 mb-3"><h4>Zona Azul</h4><span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded self-center">2h Máx</span></div>
+                        
+                        <div class="mb-3">
+                            <p class="font-bold text-xs uppercase text-gray-400 mb-1">No Residentes</p>
+                            <div class="flex justify-between text-gray-600 border-b border-gray-50 py-1"><span>30 min:</span> <span class="font-bold text-gray-900">0,55 €</span></div>
+                            <div class="flex justify-between text-gray-600 border-b border-gray-50 py-1"><span>1 hora:</span> <span class="font-bold text-gray-900">0,90 €</span></div>
+                            <div class="flex justify-between text-gray-600 py-1"><span>2 horas:</span> <span class="font-bold text-gray-900">1,80 €</span></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <p class="font-bold text-xs uppercase text-gray-400 mb-1">Residentes</p>
+                            <div class="flex justify-between text-gray-600"><span>1 día:</span> <span class="font-bold text-gray-900">1,05 €</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-3 border-t border-gray-100 bg-red-50 -mx-5 -mb-5 p-4 rounded-b-2xl">
+                        <p class="font-bold text-xs uppercase text-red-500 mb-2">Tarifa Post-Pago (Anulación)</p>
+                        <div class="flex justify-between text-red-700 text-xs mb-1"><span>Exceso &lt; 30min:</span> <b>3,10 €</b></div>
+                        <div class="flex justify-between text-red-700 text-xs"><span>No ticket / &gt; 30m:</span> <b>6,30 €</b></div>
+                    </div>
+                </div>
+
+                <!-- Zona Verde -->
+                <div class="bg-white p-5 rounded-3xl shadow-lg border-t-8 border-green-500 text-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between font-bold text-lg text-gray-800 mb-3"><h4>Zona Verde</h4><span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded self-center">5h Máx</span></div>
+                        
+                        <div class="mb-3">
+                            <p class="font-bold text-xs uppercase text-gray-400 mb-1">No Residentes</p>
+                            <div class="flex justify-between text-gray-600 border-b border-gray-50 py-1"><span>1 hora:</span> <span class="font-bold text-gray-900">0,70 €</span></div>
+                            <div class="flex justify-between text-gray-600 py-1"><span>5 horas:</span> <span class="font-bold text-gray-900">1,45 €</span></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <p class="font-bold text-xs uppercase text-gray-400 mb-1">Residentes</p>
+                            <div class="flex justify-between text-gray-600"><span>1 día:</span> <span class="font-bold text-gray-900">1,05 €</span></div>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-gray-100 bg-red-50 -mx-5 -mb-5 p-4 rounded-b-2xl">
+                        <p class="font-bold text-xs uppercase text-red-500 mb-2">Tarifa Post-Pago (Anulación)</p>
+                        <div class="flex justify-between text-red-700 text-xs mb-1"><span>Exceso &lt; 30min:</span> <b>3,15 €</b></div>
+                        <div class="flex justify-between text-red-700 text-xs"><span>No ticket / &gt; 30m:</span> <b>6,30 €</b></div>
+                    </div>
+                </div>
+
+                <!-- Zona Roja -->
+                <div class="bg-white p-5 rounded-3xl shadow-lg border-t-8 border-red-500 text-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between font-bold text-lg text-gray-800 mb-3"><h4>Zona Roja</h4><span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded self-center">1h Máx</span></div>
+                        
+                        <div class="mb-3">
+                            <p class="font-bold text-xs uppercase text-gray-400 mb-1">No Residentes</p>
+                            <div class="flex justify-between text-gray-600 border-b border-gray-50 py-1"><span>30 min:</span> <span class="font-bold text-gray-900">0,55 €</span></div>
+                            <div class="flex justify-between text-gray-600 py-1"><span>1 hora:</span> <span class="font-bold text-gray-900">0,90 €</span></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <p class="font-bold text-xs uppercase text-gray-400 mb-1">Residentes</p>
+                            <div class="flex justify-between text-gray-600"><span>1 día:</span> <span class="font-bold text-gray-900">1,05 €</span></div>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-gray-100 bg-red-50 -mx-5 -mb-5 p-4 rounded-b-2xl">
+                        <p class="font-bold text-xs uppercase text-red-500 mb-2">Tarifa Post-Pago (Anulación)</p>
+                        <div class="flex justify-between text-red-700 text-xs mb-1"><span>Exceso &lt; 30min:</span> <b>3,10 €</b></div>
+                        <div class="flex justify-between text-red-700 text-xs"><span>No ticket / &gt; 30m:</span> <b>6,15 €</b></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Listado de Calles (GENERADO POR JS) -->
+            <div class="bg-white p-6 rounded-3xl shadow-lg border border-gray-100">
+                <h3 class="text-xl font-bold mb-4 flex items-center">
+                    <svg class="h-6 w-6 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    Listado de vías ORA
+                </h3>
+                <div id="ora-streets-container" class="max-h-96 overflow-y-auto custom-scrollbar pr-2"></div>
+            </div>
+        </div>
+
+        <!-- VISTA 5: CORTES -->
+        <div id="cortes-view" class="view-section">
+            <div class="flex items-center mb-6">
+                <button onclick="navigateTo('home')" class="mr-4 p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50 transition shadow-sm border border-gray-200">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                </button>
+                <h2 class="text-2xl font-bold">Cortes de Tráfico y Eventos</h2>
+            </div>
+            <div class="text-center py-12">
+                <div class="inline-block p-4 rounded-full bg-gray-50 mb-4">
+                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900">Sección en construcción</h3>
+                <p class="text-gray-500 mt-1">Estamos preparando la nueva visualización de cortes y eventos.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="w-full text-center py-6 text-xs text-gray-400 border-t border-gray-200 bg-white mt-8">
+        &copy; 2025 GranáGo. Todos los derechos reservados.
+    </footer>
+
+    <!-- LOGICA APLICACIÓN -->
+    <script>
+        const API_BASE_URL = 'https://movgr.apis.mianfg.me';
+        
+        // --- DATA DE CALLES ORA ---
+        const ORA_DATA = [
+            {
+                title: "ZONA ROJA (195 Plazas)", color: "text-red-600", border: "border-red-200", bg: "bg-red-50",
+                subzones: [
+                    { name: "Zona 3", streets: [["Carril del Picón", 35], ["Gran Capitán", 60], ["San Juan de Dios", 7]] },
+                    { name: "Zona 4", streets: [["Plaza de Gracia", 1], ["Obispo Hurtado (1-17 y 2-14)", 41], ["Seminario", 8], ["Solarillo de Gracia", 10], ["Casillas de Prats", 33]] }
+                ]
+            },
+            {
+                title: "ZONA AZUL (4.003 Plazas)", color: "text-blue-600", border: "border-blue-200", bg: "bg-blue-50",
+                subzones: [
+                    { name: "Zona 1", streets: [["Manuel Gómez Moreno", 23], ["María Luisa de Dios", 30], ["Fray Leopoldo de Alpandeire", 48], ["Rector Marín Ocete", 49], ["Santa Bárbara", 67], ["Acera de Canasteros", 30], ["Almona de San Juan de Dios", 14], ["Gonzalo Gallas", 119], ["Pérez Galdós", 34], ["Julio Verne", 19], ["Arabial (100-136 y 99-125)", 60], ["Faisán (1-47 y 2-34)", 30], ["Cisne", 30], ["Mirlo", 10], ["Ruiseñor", 33], ["Tórtola", 33], ["Halcón", 10], ["Pz Madre de los Ferroviarios", 40]] },
+                    { name: "Zona 2", streets: [["Ancha de Capuchinos", 41], ["Avda. Capitán Moreno", 28], ["Avda. del Hospicio", 34], ["Isaac Albéniz", 22], ["Avenida de Madrid", 50], ["Acera de San Ildefonso", 46], ["Doctor Oloriz", 44], ["Doctor Guirao Gea", 114], ["Doctor Azpitarte", 42], ["Doctor Marañón", 38], ["Doctor Fermín Garrido", 37], ["Real de Cartuja", 26], ["Cristo de la Yedra", 37]] },
+                    { name: "Zona 3", streets: [["Emperatriz Eugenia", 47], ["Martínez de la Rosa", 40], ["Melchor Almagro", 49], ["Pintor López Mezquita", 51], ["Pintor Rodríguez Acosta", 33], ["Pintor Velázquez", 17], ["Sol", 70], ["Trajano", 27], ["San Jerónimo", 26], ["Profesor Motos Guirao", 24], ["Profesor Sainz Cantero", 33], ["Trinidad Morcillo", 27], ["Goya", 26]] },
+                    { name: "Zona 4", streets: [["Ancha de Gracia", 26], ["Músico Vicente Zarzo", 16], ["Pedro Antonio de Alarcón (31-93 y 32-88)", 106], ["Sócrates", 35], ["General Narváez", 4], ["Lope de Vega", 30], ["Cristo de Medinaceli", 37], ["Camino de Purchil (1-7 y 2-8)", 30], ["Marqués Don Gonzalo", 49], ["Azorín", 41], ["Angel Barrios", 32], ["José Recuerda", 35], ["Arabial (47-59 y 36-63)", 68]] },
+                    { name: "Zona 5", streets: [["Alhamar", 58], ["Luis Braille", 20], ["Manuel de Falla", 60], ["Martínez Campos", 31], ["Pedro Antonio de Alarcón (1-29 y 2-30)", 41], ["Tejeiro", 58], ["Doctor Martín Lagos", 7], ["Arabial (1-47 y 2-34)", 14], ["Marqués de la Ensenada", 17], ["Las Flores", 17], ["Profesor García Gómez", 26], ["Agustina de Aragón", 90], ["Maestro Vives", 11], ["Pintor Zuloaga", 60], ["Mulhacén", 12]] },
+                    { name: "Zona 6", streets: [["Avda. Don Bosco (41-43 y 44-46)", 80], ["Avd. Dilar (27-127 y 12-136)", 116], ["Avda. Barcelona", 44], ["Palencia (1-23 y 2-22)", 28]] },
+                    { name: "Zona 7", streets: [["Paseo de la Bomba", 16], ["Paseo del Salón", 6], ["Paseo de los Basilios", 46], ["Poeta Manuel de Góngora", 30], ["SOS del Rey Católico", 58], ["Avda Pablo Picasso (14-32 y 15-35)", 81], ["Andrés Segovia (1-41 y 2-44)", 65], ["Agustín Lara", 75], ["Carretera de la Sierra (16-60 y 9-61)", 93]] },
+                    { name: "Zona 8", streets: [["Avenida de la Ciencia", 71], ["Paseo Jardín de la Reina", 43], ["Doctor Alejandro Otero", 10]] },
+                    { name: "Zona 9", streets: [["Carmen de Burgos", 67], ["Torre de la Pólvora", 55], ["Torre de Comares", 12], ["Paseo del Emperador Carlos V", 210], ["Avda de la Ilustración", 58]] },
+                ]
+            },
+            {
+                title: "ZONA VERDE (303 Plazas)", color: "text-green-600", border: "border-green-200", bg: "bg-green-50",
+                subzones: [
+                    { name: "Zona 7", streets: [["Callejón del Pretorio", 39], ["Profesor Albareda", 24]] },
+                    { name: "Zona 8", streets: [["Los Juncos", 85]] },
+                    { name: "Zona 9", streets: [["Avenida del Conocimiento", 155]] }
+                ]
+            },
+            {
+                title: "R. ESPECIAL (36 Plazas)", color: "text-purple-600", border: "border-purple-200", bg: "bg-purple-50",
+                subzones: [ { name: "Zona 10", streets: [["Paseo de los Mártires", 36]] } ]
+            }
+        ];
+
+        function renderOraStreets() {
+            const container = document.getElementById('ora-streets-container');
+            if (container.children.length > 0) return;
+            
+            let html = "";
+            ORA_DATA.forEach(zone => {
+                html += `<div class="mb-6"><h4 class="${zone.color} font-bold border-b-2 ${zone.border} pb-1 mb-2 sticky top-0 bg-white z-10">${zone.title}</h4>`;
+                zone.subzones.forEach(sub => {
+                    html += `<p class="font-bold text-gray-700 mt-2 mb-1 text-xs uppercase ${zone.bg} p-1 rounded">${sub.name}</p>
+                             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1 text-sm text-gray-600 mb-3">`;
+                    sub.streets.forEach(st => {
+                        html += `<div class="flex justify-between"><span>${st[0]}</span> <span class="font-mono text-xs bg-gray-100 px-1 rounded">${st[1]}</span></div>`;
+                    });
+                    html += `</div>`;
+                });
+                html += `</div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function switchOraMap(type) {
+            const btnVias = document.getElementById('btn-map-vias');
+            const btnParq = document.getElementById('btn-map-parq');
+            const mapVias = document.getElementById('map-vias');
+            const mapParq = document.getElementById('map-parquimetros');
+
+            if (type === 'vias') {
+                btnVias.className = "px-6 py-2 rounded-lg text-sm font-bold transition-all shadow bg-white text-blue-600";
+                btnParq.className = "px-6 py-2 rounded-lg text-sm font-bold text-gray-500 hover:text-gray-700 transition-all";
+                mapVias.classList.remove('hidden');
+                mapParq.classList.add('hidden');
+            } else {
+                btnVias.className = "px-6 py-2 rounded-lg text-sm font-bold text-gray-500 hover:text-gray-700 transition-all";
+                btnParq.className = "px-6 py-2 rounded-lg text-sm font-bold transition-all shadow bg-white text-blue-600";
+                mapVias.classList.add('hidden');
+                mapParq.classList.remove('hidden');
+            }
+        }
+
+        // --- NAVEGACIÓN ---
+        function navigateTo(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            const view = document.getElementById(viewId + '-view');
+            if (view) view.classList.add('active');
+
+            if (viewId === 'transporte' && document.getElementById('metro-stop-select').options.length <= 1) loadMetroStops();
+            if (viewId === 'ora') renderOraStreets();
+        }
+
+        // --- LÓGICA ZOOM IMAGEN ---
+        let scale = 1, pX = 0, pY = 0, startX = 0, startY = 0, isDragging = false;
+        
+        function updateTransform() {
+            const img = document.getElementById('zbe-map-img');
+            if(img) img.style.transform = `translate(${pX}px, ${pY}px) scale(${scale})`;
+        }
+
+        function adjustZoom(delta) {
+            scale = Math.max(0.5, Math.min(4, scale + delta)); 
+            updateTransform();
+        }
+
+        function resetZoom() {
+            scale = 1; pX = 0; pY = 0;
+            updateTransform();
+        }
+
+        function startDrag(e) {
+            if(e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+            e.preventDefault();
+            isDragging = true;
+            startX = (e.touches ? e.touches[0].clientX : e.clientX) - pX;
+            startY = (e.touches ? e.touches[0].clientY : e.clientY) - pY;
+            document.getElementById('zbe-map-container').style.cursor = 'grabbing';
+        }
+
+        function doDrag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const x = (e.touches ? e.touches[0].clientX : e.clientX);
+            const y = (e.touches ? e.touches[0].clientY : e.clientY);
+            pX = x - startX;
+            pY = y - startY;
+            updateTransform();
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            const c = document.getElementById('zbe-map-container');
+            if(c) c.style.cursor = 'grab';
+        }
+
+        // Init Listeners Zoom
+        const imgContainer = document.getElementById('zbe-map-container');
+        if(imgContainer) {
+            imgContainer.addEventListener('mousedown', startDrag);
+            imgContainer.addEventListener('touchstart', startDrag);
+            imgContainer.addEventListener('wheel', (e) => { e.preventDefault(); adjustZoom(e.deltaY > 0 ? -0.1 : 0.1); });
+            window.addEventListener('mousemove', doDrag);
+            window.addEventListener('touchmove', doDrag, {passive: false});
+            window.addEventListener('mouseup', stopDrag);
+            window.addEventListener('touchend', stopDrag);
+        }
+
+        // --- LÓGICA TRANSPORTE ---
+        const METRO_NAMES = { "3_1116": "M-156", "3_1117": "M-157", "3_644": "0111", "3_701": "0256", "3_739": "0305" };
+        const BUS_COLORS = { '4': 'bg-red-600', '8': 'bg-amber-700', '9': 'bg-orange-600', '11': 'bg-orange-400', '21': 'bg-red-700', '33': 'bg-red-800', '5': 'bg-cyan-500', '25': 'bg-blue-400', 'C30': 'bg-purple-600', 'C31': 'bg-pink-500', 'C32': 'bg-fuchsia-600', 'C34': 'bg-rose-500', 'C5': 'bg-red-800', 'U1': 'bg-green-600', 'U2': 'bg-lime-500', 'U3': 'bg-emerald-600', 'S0': 'bg-slate-600', 'S2': 'bg-stone-600', 'Metro': 'bg-blue-700' };
+
+        function getLineColor(id) { 
+            if (id.startsWith('M') || (!isNaN(id) && id.length >= 3)) return 'bg-green-600'; 
+            return BUS_COLORS[id] || 'bg-gray-600';
+        }
+
+        function isNight() { const h = new Date().getHours(); return (h >= 0 && h < 6) || (h === 23 && new Date().getMinutes() >= 30); }
+
+        async function searchStop() {
+            const stopCode = document.getElementById('stop-code').value.trim();
+            const resEl = document.getElementById('bus-results');
+            
+            if (!stopCode) return resEl.innerHTML = '<p class="text-red-500 mt-2 text-center text-sm">Introduce código.</p>';
+            resEl.innerHTML = '<div class="text-center py-4"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto"></div></div>';
+            
+            try {
+                const res = await fetch(`${API_BASE_URL}/bus/llegadas/${stopCode}`);
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                
+                if (!data?.proximos?.length) {
+                    resEl.innerHTML = `<div class="p-4 bg-gray-50 rounded-xl text-center"><p class="font-bold">Parada ${data.parada?.nombre || stopCode}</p><p class="text-gray-500">Sin estimaciones.</p></div>`;
+                    return;
+                }
+                
+                const list = data.proximos.map(p => {
+                    const line = METRO_NAMES[p.linea?.id] || p.linea?.id || '?';
+                    const time = p.minutos === 0 ? '<span class="text-red-600 font-black animate-pulse">LLEGANDO</span>' : `<span class="text-blue-600 font-bold">${p.minutos} min</span>`;
+                    return `<li class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0"><div class="flex items-center gap-3"><span class="text-white text-xs font-bold px-2 py-1 rounded ${getLineColor(line)} min-w-[2.5rem] text-center">${line}</span><span class="font-medium text-gray-700 text-sm truncate w-32">${p.destino}</span></div>${time}</li>`;
+                }).join('');
+                
+                resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden"><div class="bg-gray-50 p-2 text-center font-bold text-gray-700 text-xs uppercase tracking-wide">Parada: ${data.parada?.nombre}</div><ul class="p-3">${list}</ul></div>`;
+            } catch (e) {
+                resEl.innerHTML = isNight() ? `<div class="p-3 bg-blue-50 text-blue-800 rounded-xl text-center text-sm font-bold">🌙 Servicio Nocturno</div>` : `<p class="text-red-500 mt-2 text-center">⚠️ Error conexión</p>`;
+            }
+        }
+
+        async function searchMetroStop() {
+            const select = document.getElementById('metro-stop-select');
+            const resEl = document.getElementById('metro-results');
+            if (!select.value) return;
+
+            resEl.innerHTML = '<div class="text-center py-4"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto"></div></div>';
+            try {
+                const res = await fetch(`${API_BASE_URL}/metro/llegadas/${select.value}`);
+                if(!res.ok) throw new Error();
+                const data = await res.json();
+
+                if (!data?.proximos?.length) return resEl.innerHTML = `<div class="p-4 bg-gray-50 rounded-xl text-center text-sm text-gray-500">Sin trenes próximos.</div>`;
+
+                const list = data.proximos.map(p => `<li class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0"><span class="font-medium text-gray-700 text-sm">Hacia ${p.direccion}</span>${p.minutos === 0 ? '<span class="text-red-600 font-black">YA</span>' : `<span class="text-green-600 font-bold">${p.minutos} min</span>`}</li>`).join('');
+                resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden"><div class="bg-green-50 p-2 text-center font-bold text-green-800 text-xs uppercase">${select.options[select.selectedIndex].text}</div><ul class="p-3">${list}</ul></div>`;
+            } catch (e) {
+                resEl.innerHTML = isNight() ? `<div class="p-3 bg-green-50 text-green-800 rounded-xl text-center text-sm font-bold">🌙 Servicio Nocturno</div>` : `<p class="text-red-500 mt-2 text-center">⚠️ Error conexión</p>`;
+            }
+        }
+
+        async function loadMetroStops() {
+            try {
+                const stops = await (await fetch(`${API_BASE_URL}/metro/paradas`)).json();
+                document.getElementById('metro-stop-select').innerHTML = '<option value="">Selecciona parada...</option>' + stops.map(s => `<option value="${s.id}">${s.nombre}</option>`).join('');
+            } catch (e) { console.error("Error stops"); }
+        }
+
+        window.onload = loadMetroStops;
+    </script>
+</body>
+</html>
