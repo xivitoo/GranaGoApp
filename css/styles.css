@@ -3,13 +3,12 @@
 body {
     font-family: 'Inter', sans-serif;
     background-color: #f7f9fb;
-    /* Evita scroll horizontal indeseado */
     overflow-x: hidden; 
 }
 
 /* --- UI CUSTOM --- */
 .service-card {
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
 }
 .service-card:hover {
     transform: translateY(-4px);
@@ -40,95 +39,79 @@ body {
     margin-bottom: 0.1rem;
 }
 
-/* --- MODO OSCURO (CORREGIDO - ALTO CONTRASTE) --- */
+/* =========================================
+   === MODO OSCURO (CORREGIDO FINAL) ===
+   ========================================= */
+
 body.dark-mode {
     background-color: #121212 !important;
-    color: #f3f4f6 !important; /* Blanco casi puro */
+    color: #e5e7eb !important;
 }
 
-/* 1. Fondo e Imagen */
+/* 1. Fondo de la web */
 body.dark-mode .fixed.inset-0 {
     opacity: 0.15 !important;
     filter: invert(1) grayscale(100%) brightness(0.7);
 }
 
-/* 2. Cajas y Tarjetas (Fondo gris oscuro) */
-body.dark-mode .bg-white,
+/* 2. Contenedores generales (blancos o grises claros) se vuelven oscuros */
+body.dark-mode .bg-white {
+    background-color: #1e1e1e !important;
+    border-color: #374151 !important;
+    color: #e5e7eb !important;
+}
 body.dark-mode .bg-gray-50,
 body.dark-mode .bg-gray-100 {
-    background-color: #1e1e1e !important;
-    color: #e5e7eb !important;
-    border-color: #374151 !important;
+    background-color: #262626 !important; /* Un poco más claro que el base */
+    border-color: #404040 !important;
+    color: #d1d5db !important;
 }
 
-/* 3. ARREGLO DE TEXTOS (Aquí está la magia) */
+/* Tarjetas de Servicio (Home) más visibles */
+body.dark-mode .service-card {
+    background-color: #2d2d2d !important;
+    border-color: #4b5563 !important;
+}
 
-/* Forzar que TODOS los grises oscuros se vuelvan claros */
+/* 3. Textos (Gris oscuro -> Gris claro) */
 body.dark-mode .text-gray-400,
 body.dark-mode .text-gray-500,
 body.dark-mode .text-gray-600, 
 body.dark-mode .text-gray-700, 
 body.dark-mode .text-gray-800, 
 body.dark-mode .text-gray-900 {
-    color: #d1d5db !important; /* Gris claro muy legible */
+    color: #d1d5db !important;
 }
 
-/* Títulos y negritas más brillantes */
+/* Títulos brillantes */
 body.dark-mode .font-bold,
 body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4 {
     color: #ffffff !important;
 }
 
-/* 4. ARREGLO DE COLORES OSCUROS (ORA, ZBE, BUSES) 
-   Cuando el fondo es blanco, usas azul oscuro (800/900). 
-   En modo oscuro, eso no se lee. Lo cambiamos a azul claro. */
-
-/* Azules */
-body.dark-mode .text-blue-600,
-body.dark-mode .text-blue-700,
-body.dark-mode .text-blue-800,
-body.dark-mode .text-blue-900 {
-    color: #60a5fa !important; /* Azul cielo */
+/* EXCEPCIÓN IMPORTANTE: Si algo tiene explícitamente text-black (ej: Bus U1 amarillo), mantener negro */
+body.dark-mode .text-black {
+    color: #000000 !important;
 }
 
-/* Rojos */
-body.dark-mode .text-red-600,
-body.dark-mode .text-red-700,
-body.dark-mode .text-red-800 {
-    color: #f87171 !important; /* Rojo salmón claro */
-}
+/* 4. Textos de colores (Aclararlos para que se lean sobre fondo oscuro) */
+body.dark-mode .text-blue-600, body.dark-mode .text-blue-700, body.dark-mode .text-blue-800 { color: #60a5fa !important; }
+body.dark-mode .text-red-600, body.dark-mode .text-red-700, body.dark-mode .text-red-800 { color: #f87171 !important; }
+body.dark-mode .text-green-600, body.dark-mode .text-green-800 { color: #4ade80 !important; }
+body.dark-mode .text-orange-800, body.dark-mode .text-orange-900 { color: #fbbf24 !important; }
+body.dark-mode .text-purple-600 { color: #c084fc !important; }
 
-/* Verdes */
-body.dark-mode .text-green-600,
-body.dark-mode .text-green-800 {
-    color: #4ade80 !important; /* Verde neón suave */
-}
+/* 5. CAJAS DE INFORMACIÓN (Alertas suaves)
+   Solo afectamos a los fondos "suaves" (50, 100).
+   NO tocamos los fondos fuertes (600, 700) para no romper botones ni buses.
+*/
+body.dark-mode [class*="bg-blue-50"], body.dark-mode [class*="bg-blue-100"] { background-color: rgba(59, 130, 246, 0.15) !important; border-color: rgba(59, 130, 246, 0.3) !important; }
+body.dark-mode [class*="bg-red-50"], body.dark-mode [class*="bg-red-100"] { background-color: rgba(239, 68, 68, 0.15) !important; border-color: rgba(239, 68, 68, 0.3) !important; }
+body.dark-mode [class*="bg-green-50"], body.dark-mode [class*="bg-green-100"] { background-color: rgba(34, 197, 94, 0.15) !important; border-color: rgba(34, 197, 94, 0.3) !important; }
+body.dark-mode [class*="bg-orange-50"], body.dark-mode [class*="bg-orange-100"] { background-color: rgba(249, 115, 22, 0.15) !important; border-color: rgba(249, 115, 22, 0.3) !important; }
+body.dark-mode [class*="bg-purple-50"] { background-color: rgba(168, 85, 247, 0.15) !important; border-color: rgba(168, 85, 247, 0.3) !important; }
 
-/* Naranjas */
-body.dark-mode .text-orange-800,
-body.dark-mode .text-orange-900 {
-    color: #fbbf24 !important; /* Ámbar claro */
-}
-
-/* 5. Cajas de colores suaves (Alertas, info) 
-   Hacemos que el fondo sea casi transparente y mantenemos el borde */
-body.dark-mode [class*="bg-blue-"],
-body.dark-mode [class*="bg-red-"],
-body.dark-mode [class*="bg-green-"],
-body.dark-mode [class*="bg-orange-"] {
-    background-color: rgba(255, 255, 255, 0.05) !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
-}
-/* Excepción: Botones sólidos (mantener color) */
-body.dark-mode button[class*="bg-blue-600"],
-body.dark-mode button[class*="bg-red-600"],
-body.dark-mode button[class*="bg-green-600"] {
-    background-color: inherit !important; /* Mantiene el color original del botón */
-    opacity: 0.9;
-    color: white !important;
-}
-
-/* 6. FORMULARIOS (Inputs y Selects) */
+/* 6. Inputs y Selects */
 body.dark-mode input, 
 body.dark-mode select {
     background-color: #2d2d2d !important;
@@ -136,10 +119,10 @@ body.dark-mode select {
     border: 1px solid #4b5563 !important;
 }
 body.dark-mode input::placeholder {
-    color: #9ca3af !important; /* Placeholder visible */
+    color: #9ca3af !important;
 }
 
-/* 7. SVG Iconos */
+/* 7. Iconos SVG */
 body.dark-mode svg {
-    color: currentColor; /* Hereda el color del texto corregido */
+    color: currentColor;
 }

@@ -160,11 +160,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- LÓGICA TRANSPORTE ---
 const METRO_NAMES = { "3_1116": "M-156", "3_1117": "M-157", "3_644": "0111", "3_701": "0256", "3_739": "0305" };
-const BUS_COLORS = { '4': 'bg-red-600', '8': 'bg-amber-700', '9': 'bg-orange-600', '11': 'bg-orange-400', '21': 'bg-red-700', '33': 'bg-red-800', '5': 'bg-cyan-500', '25': 'bg-blue-400', 'C30': 'bg-purple-600', 'C31': 'bg-pink-500', 'C32': 'bg-fuchsia-600', 'C34': 'bg-rose-500', 'C5': 'bg-red-800', 'U1': 'bg-green-600', 'U2': 'bg-lime-500', 'U3': 'bg-emerald-600', 'S0': 'bg-slate-600', 'S2': 'bg-stone-600', 'Metro': 'bg-blue-700' };
+
+// Colores ampliados para cubrir casi todas las líneas
+const BUS_COLORS = {
+    // Líneas principales Rojas/Naranjas
+    '4': 'bg-red-600', '8': 'bg-red-700', '11': 'bg-orange-500', '21': 'bg-red-700', '33': 'bg-red-800',
+    // Líneas transversales y otras
+    '9': 'bg-blue-500', '5': 'bg-purple-600', '13': 'bg-pink-600', '25': 'bg-indigo-500',
+    // Líneas Centro (C)
+    'C30': 'bg-amber-600', 'C31': 'bg-yellow-600 text-black', 'C32': 'bg-amber-700', 'C34': 'bg-orange-700', 'C5': 'bg-red-900',
+    // Líneas Universitarias (U)
+    'U1': 'bg-yellow-500 text-black', 'U2': 'bg-yellow-600 text-black', 'U3': 'bg-yellow-700',
+    // Líneas Norte/Sur (N/S)
+    'N1': 'bg-cyan-600', 'N3': 'bg-cyan-700', 'N4': 'bg-cyan-800', 'N5': 'bg-blue-600', 'N6': 'bg-blue-800', 'N8': 'bg-indigo-700', 'N9': 'bg-indigo-800',
+    'S0': 'bg-emerald-600', 'S2': 'bg-teal-600',
+    // Metropolitanos (Verdes)
+    'Metro': 'bg-lime-600'
+};
 
 function getLineColor(id) { 
-    if (id.startsWith('M') || (!isNaN(id) && id.length >= 3)) return 'bg-green-600'; 
-    return BUS_COLORS[id] || 'bg-gray-600';
+    if (id.startsWith('M') || (!isNaN(id) && id.length >= 3 && id !== '111' && id !== '121')) return 'bg-green-600'; 
+    return BUS_COLORS[id] || 'bg-gray-600'; // Default a gris si no se encuentra
 }
 
 function isNight() { const h = new Date().getHours(); return (h >= 0 && h < 6) || (h === 23 && new Date().getMinutes() >= 30); }
@@ -188,11 +204,35 @@ window.searchStop = async function() {
         
         const list = data.proximos.map(p => {
             const line = METRO_NAMES[p.linea?.id] || p.linea?.id || '?';
-            const time = p.minutos === 0 ? '<span class="text-red-600 font-black animate-pulse">LLEGANDO</span>' : `<span class="text-blue-600 font-bold">${p.minutos} min</span>`;
-            return `<li class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0"><div class="flex items-center gap-3"><span class="text-white text-xs font-bold px-2 py-1 rounded ${getLineColor(line)} min-w-[2.5rem] text-center">${line}</span><span class="font-medium text-gray-700 text-sm truncate w-32">${p.destino}</span></div>${time}</li>`;
+            
+            // LÓGICA DE TIEMPO
+            const time = p.minutos === 0 
+                ? '<span class="text-red-600 font-black animate-pulse whitespace-nowrap">LLEGANDO</span>' 
+                : `<span class="text-blue-600 font-bold whitespace-nowrap">${p.minutos} min</span>`;
+
+            // LÓGICA DE LIMPIEZA DE TEXTO (Quitar redundancia de número)
+            // Regex: Busca al inicio "33" o "Linea 33" seguido de espacio o guion y lo borra
+            let destinoClean = p.destino;
+            const regexRedundancy = new RegExp(`^(L[íi]nea\\s+)?${line}\\s*[-]?\\s*`, 'i');
+            destinoClean = destinoClean.replace(regexRedundancy, '').trim();
+
+            return `
+            <li class="flex justify-between items-center py-3 border-b border-gray-100 last:border-0">
+                <div class="flex items-center gap-3 flex-1 overflow-hidden">
+                    <span class="text-white text-xs font-bold px-2 py-1 rounded ${getLineColor(line)} min-w-[2.5rem] text-center shadow-sm shrink-0">
+                        ${line}
+                    </span>
+                    <span class="font-medium text-gray-700 text-sm leading-tight break-words">
+                        ${destinoClean}
+                    </span>
+                </div>
+                <div class="ml-3 shrink-0">
+                    ${time}
+                </div>
+            </li>`;
         }).join('');
         
-        resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden"><div class="bg-gray-50 p-2 text-center font-bold text-gray-700 text-xs uppercase tracking-wide">Parada: ${data.parada?.nombre}</div><ul class="p-3">${list}</ul></div>`;
+        resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden"><div class="bg-gray-50 p-2 text-center font-bold text-gray-700 text-xs uppercase tracking-wide">Parada: ${data.parada?.nombre}</div><ul class="px-3 pb-1">${list}</ul></div>`;
     } catch (e) {
         resEl.innerHTML = isNight() ? `<div class="p-3 bg-blue-50 text-blue-800 rounded-xl text-center text-sm font-bold">🌙 Servicio Nocturno</div>` : `<p class="text-red-500 mt-2 text-center">⚠️ Error conexión</p>`;
     }
