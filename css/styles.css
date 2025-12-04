@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f7f9fb;
+    /* Evita scroll horizontal indeseado */
+    overflow-x: hidden; 
+}
+
+/* --- UI CUSTOM --- */
+.service-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.service-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* --- ANIMACIONES VISTAS --- */
+.view-section {
+    display: none;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+.view-section.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- SCROLLBAR --- */
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
+
+/* --- UTILIDADES --- */
+.normativa-title {
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.1rem;
+}
