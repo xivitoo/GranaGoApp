@@ -12,6 +12,8 @@
     <link rel="preload" as="image" href="imagenes/Fondo.webp">
 
     <link rel="icon" type="image/x-icon" href="imagenes/Logo.ico">
+
+    <link rel="manifest" href="./manifest.json">
 </head>
 
 <body class="min-h-screen flex flex-col text-gray-800">
@@ -306,5 +308,16 @@
     </footer>
 
     <script src="js/main.js" defer></script>
+
+    <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      // Importante: El registro debe ser relativo para GitHub Pages
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('Service Worker registrado con éxito:', reg.scope))
+        .catch(err => console.log('Error al registrar SW:', err));
+    });
+  }
+    </script>
 </body>
 </html>
