@@ -170,10 +170,27 @@
         <div class="bg-white rounded-3xl shadow-lg p-6 border-l-4 border-green-500">
             <h3 class="text-lg font-bold mb-4">📋 Normativa</h3>
             <div class="space-y-4 text-sm">
+                
                 <div class="bg-green-50 p-4 rounded-xl border border-green-100">
                     <p class="font-bold text-green-800 mb-1">✅ Vehículos Permitidos</p>
-                    <p class="text-green-700">Etiqueta <strong>C, B, ECO y CERO</strong>. Residentes.</p>
+                    <ul class="text-green-700 list-disc list-inside space-y-1">
+                        <li>Cualquier vehículo con etiqueta <strong>B, C, ECO y CERO</strong>.</li>
+                        <li>Vehículos con <strong>domicilio fiscal en Granada</strong> (Residentes), tengan o no etiqueta.</li>
+                    </ul>
                 </div>
+
+                <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                    <p class="font-bold text-red-800 mb-1">🚫 Vehículos Restringidos</p>
+                    <p class="text-red-700 mb-2">
+                        No pueden acceder los vehículos <strong>sin distintivo ambiental</strong> que <strong>NO</strong> tengan domicilio fiscal en Granada.
+                    </p>
+                    <p class="text-xs font-bold text-red-600 uppercase mb-1">Se consideran sin etiqueta:</p>
+                    <ul class="text-red-700 text-xs list-disc list-inside ml-1">
+                        <li>Gasolina anteriores a <strong>2001</strong>.</li>
+                        <li>Diésel anteriores a <strong>2006</strong>.</li>
+                    </ul>
+                </div>
+
             </div>
         </div>
     </div>
@@ -190,7 +207,7 @@
             <div class="flex justify-center mb-4">
                 <div class="bg-gray-100 p-1 rounded-xl flex space-x-1 shadow-inner">
                     <button onclick="switchOraMap('vias')" id="btn-map-vias" class="px-6 py-2 rounded-lg text-sm font-bold transition-all shadow bg-white text-blue-600">Mapa de Vías</button>
-                    <button onclick="switchOraMap('parquimetros')" id="btn-map-parq" class="px-6 py-2 rounded-lg text-sm font-bold text-gray-500 hover:text-gray-700 transition-all">Mapa Parquímetros</button>
+                    <button onclick="switchOraMap('parquimetros')" id="btn-map-parq" class="px-6 py-2 rounded-lg text-sm font-bold text-gray-500 hover:text-gray-700 transition-all">Mapa de Parquímetros</button>
                 </div>
             </div>
 
