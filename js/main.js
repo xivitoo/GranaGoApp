@@ -40,7 +40,6 @@ const ORA_DATA = [
 // --- FUNCIONES ORA ---
 window.renderOraStreets = function() {
     const container = document.getElementById('ora-streets-container');
-    // Evitar re-renderizado si ya tiene contenido
     if (container && container.children.length > 0) return;
     
     let html = "";
@@ -87,7 +86,6 @@ window.navigateTo = function(viewId) {
     const view = document.getElementById(viewId + '-view');
     if (view) view.classList.add('active');
 
-    // Lazy load de datos específicos
     if (viewId === 'transporte') {
         const select = document.getElementById('metro-stop-select');
         if (select && select.options.length <= 1) loadMetroStops();
@@ -95,92 +93,172 @@ window.navigateTo = function(viewId) {
     if (viewId === 'ora') {
         renderOraStreets();
     }
-}
-
-// --- LÓGICA ZOOM IMAGEN ---
-let scale = 1, pX = 0, pY = 0, startX = 0, startY = 0, isDragging = false;
-
-function updateTransform() {
-    const img = document.getElementById('zbe-map-img');
-    if(img) img.style.transform = `translate(${pX}px, ${pY}px) scale(${scale})`;
-}
-
-window.adjustZoom = function(delta) {
-    scale = Math.max(0.5, Math.min(4, scale + delta)); 
-    updateTransform();
-}
-
-window.resetZoom = function() {
-    scale = 1; pX = 0; pY = 0;
-    updateTransform();
-}
-
-// Event Listeners para Zoom (Definidos fuera para evitar duplicados)
-document.addEventListener('DOMContentLoaded', () => {
-    const imgContainer = document.getElementById('zbe-map-container');
-    if(imgContainer) {
-        const startDrag = (e) => {
-            if(e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
-            e.preventDefault();
-            isDragging = true;
-            startX = (e.touches ? e.touches[0].clientX : e.clientX) - pX;
-            startY = (e.touches ? e.touches[0].clientY : e.clientY) - pY;
-            imgContainer.style.cursor = 'grabbing';
-        };
-
-        const doDrag = (e) => {
-            if (!isDragging) return;
-            e.preventDefault();
-            const x = (e.touches ? e.touches[0].clientX : e.clientX);
-            const y = (e.touches ? e.touches[0].clientY : e.clientY);
-            pX = x - startX;
-            pY = y - startY;
-            updateTransform();
-        };
-
-        const stopDrag = () => {
-            isDragging = false;
-            if(imgContainer) imgContainer.style.cursor = 'grab';
-        };
-
-        imgContainer.addEventListener('mousedown', startDrag);
-        imgContainer.addEventListener('touchstart', startDrag);
-        imgContainer.addEventListener('wheel', (e) => { e.preventDefault(); adjustZoom(e.deltaY > 0 ? -0.1 : 0.1); });
-        
-        // Eventos globales para el arrastre
-        window.addEventListener('mousemove', doDrag);
-        window.addEventListener('touchmove', doDrag, {passive: false});
-        window.addEventListener('mouseup', stopDrag);
-        window.addEventListener('touchend', stopDrag);
+    if (viewId === 'cortes') {
+        initCortesMap();
     }
+}
 
-    // Cargar paradas de metro al inicio si estamos en esa vista, o precargarlas
-    loadMetroStops();
+// --- LÓGICA MAPA ZBE (MODAL PANTALLA COMPLETA) ---
+let modalState = {
+    scale: 1,
+    pX: 0,
+    pY: 0,
+    isDragging: false,
+    startX: 0,
+    startY: 0,
+    lastX: 0,
+    lastY: 0,
+    initialDist: 0,
+    initialScale: 1
+};
+
+window.openZbeModal = function() {
+    const modal = document.getElementById('zbe-modal');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    setTimeout(() => modal.classList.remove('opacity-0'), 10);
+    resetModalState();
+}
+
+window.closeZbeModal = function() {
+    const modal = document.getElementById('zbe-modal');
+    if (!modal) return;
+    modal.classList.add('opacity-0');
+    setTimeout(() => modal.classList.add('hidden'), 300);
+}
+
+function resetModalState() {
+    // 1. AQUÍ DEFINIMOS EL ZOOM INICIAL QUE TÚ QUIERES (0.25)
+    const zoomInicial = 0.25; 
+
+    modalState = { 
+        scale: zoomInicial, 
+        pX: 0, 
+        pY: 0, 
+        isDragging: false, 
+        startX: 0, 
+        startY: 0, 
+        lastX: 0, 
+        lastY: 0, 
+        initialDist: 0, 
+        initialScale: zoomInicial 
+    };
+    updateModalTransform();
+}
+
+function updateModalTransform() {
+    const modalImg = document.getElementById('zbe-modal-img');
+    if (modalImg) {
+        modalImg.style.transform = `translate(${modalState.pX}px, ${modalState.pY}px) scale(${modalState.scale})`;
+    }
+}
+
+// EVENT LISTENERS DEL MODAL E INICIALIZACIÓN
+document.addEventListener('DOMContentLoaded', () => {
+    loadMetroStops(); // Carga inicial de metro
+
+    const modalContainer = document.getElementById('zbe-modal');
+    const modalImg = document.getElementById('zbe-modal-img');
+    
+    if (modalContainer && modalImg) {
+        // ZOOM RUEDA RATÓN
+        modalContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            
+            // 2. CORREGIDO: Bajamos el límite mínimo a 0.1 para que no salte al estar en 0.25
+            const newScale = Math.min(Math.max(0.1, modalState.scale * delta), 5);
+            
+            modalState.scale = newScale;
+            updateModalTransform();
+        }, { passive: false });
+
+        // INICIO ARRASTRE / TOUCH
+        const startDrag = (e) => {
+            if (e.touches && e.touches.length === 2) {
+                modalState.isDragging = false;
+                modalState.initialDist = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+                modalState.initialScale = modalState.scale;
+            } else if (!e.touches || e.touches.length === 1) {
+                modalState.isDragging = true;
+                modalState.startX = e.touches ? e.touches[0].clientX : e.clientX;
+                modalState.startY = e.touches ? e.touches[0].clientY : e.clientY;
+                modalState.lastX = modalState.pX;
+                modalState.lastY = modalState.pY;
+                modalImg.style.cursor = 'grabbing';
+            }
+        };
+
+        // MOVIMIENTO
+        const doDrag = (e) => {
+            // Lógica Zoom Pellizco
+            if (e.touches && e.touches.length === 2 && modalState.initialDist > 0) {
+                e.preventDefault();
+                const currentDist = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+                const scaleFactor = currentDist / modalState.initialDist;
+                
+                // 3. CORREGIDO: Bajamos el límite mínimo a 0.1 aquí también
+                modalState.scale = Math.min(Math.max(0.1, modalState.initialScale * scaleFactor), 5);
+                
+                updateModalTransform();
+                return;
+            }
+
+            // Lógica Arrastre
+            if (!modalState.isDragging) return;
+            e.preventDefault();
+
+            const x = e.touches ? e.touches[0].clientX : e.clientX;
+            const y = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            const deltaX = x - modalState.startX;
+            const deltaY = y - modalState.startY;
+
+            modalState.pX = modalState.lastX + deltaX;
+            modalState.pY = modalState.lastY + deltaY;
+            
+            updateModalTransform();
+        };
+
+        const endDrag = () => {
+            modalState.isDragging = false;
+            modalState.initialDist = 0;
+            if(modalImg) modalImg.style.cursor = 'grab';
+        };
+
+        modalContainer.addEventListener('mousedown', startDrag);
+        modalContainer.addEventListener('touchstart', startDrag, { passive: false });
+        
+        window.addEventListener('mousemove', doDrag);
+        window.addEventListener('touchmove', doDrag, { passive: false });
+        
+        window.addEventListener('mouseup', endDrag);
+        window.addEventListener('touchend', endDrag);
+    }
 });
 
 // --- LÓGICA TRANSPORTE ---
 const METRO_NAMES = { "3_1116": "M-156", "3_1117": "M-157", "3_644": "0111", "3_701": "0256", "3_739": "0305" };
 
-// Colores ampliados para cubrir casi todas las líneas
 const BUS_COLORS = {
-    // Líneas principales Rojas/Naranjas
     '4': 'bg-red-600', '8': 'bg-red-700', '11': 'bg-orange-500', '21': 'bg-red-700', '33': 'bg-red-800',
-    // Líneas transversales y otras
     '9': 'bg-blue-500', '5': 'bg-purple-600', '13': 'bg-pink-600', '25': 'bg-indigo-500',
-    // Líneas Centro (C)
     'C30': 'bg-amber-600', 'C31': 'bg-yellow-600 text-black', 'C32': 'bg-amber-700', 'C34': 'bg-orange-700', 'C5': 'bg-red-900',
-    // Líneas Universitarias (U)
     'U1': 'bg-yellow-500 text-black', 'U2': 'bg-yellow-600 text-black', 'U3': 'bg-yellow-700',
-    // Líneas Norte/Sur (N/S)
     'N1': 'bg-cyan-600', 'N3': 'bg-cyan-700', 'N4': 'bg-cyan-800', 'N5': 'bg-blue-600', 'N6': 'bg-blue-800', 'N8': 'bg-indigo-700', 'N9': 'bg-indigo-800',
     'S0': 'bg-emerald-600', 'S2': 'bg-teal-600',
-    // Metropolitanos (Verdes)
     'Metro': 'bg-lime-600'
 };
 
 function getLineColor(id) { 
     if (id.startsWith('M') || (!isNaN(id) && id.length >= 3 && id !== '111' && id !== '121')) return 'bg-green-600'; 
-    return BUS_COLORS[id] || 'bg-gray-600'; // Default a gris si no se encuentra
+    return BUS_COLORS[id] || 'bg-gray-600';
 }
 
 function isNight() { const h = new Date().getHours(); return (h >= 0 && h < 6) || (h === 23 && new Date().getMinutes() >= 30); }
@@ -204,14 +282,10 @@ window.searchStop = async function() {
         
         const list = data.proximos.map(p => {
             const line = METRO_NAMES[p.linea?.id] || p.linea?.id || '?';
-            
-            // LÓGICA DE TIEMPO
             const time = p.minutos === 0 
                 ? '<span class="text-red-600 font-black animate-pulse whitespace-nowrap">LLEGANDO</span>' 
                 : `<span class="text-blue-600 font-bold whitespace-nowrap">${p.minutos} min</span>`;
 
-            // LÓGICA DE LIMPIEZA DE TEXTO (Quitar redundancia de número)
-            // Regex: Busca al inicio "33" o "Linea 33" seguido de espacio o guion y lo borra
             let destinoClean = p.destino;
             const regexRedundancy = new RegExp(`^(L[íi]nea\\s+)?${line}\\s*[-]?\\s*`, 'i');
             destinoClean = destinoClean.replace(regexRedundancy, '').trim();
@@ -261,10 +335,201 @@ window.searchMetroStop = async function() {
 async function loadMetroStops() {
     try {
         const select = document.getElementById('metro-stop-select');
-        // Si ya tiene datos (más que la opción por defecto), no recargar
         if (select && select.options.length > 1) return;
 
         const stops = await (await fetch(`${API_BASE_URL}/metro/paradas`)).json();
         if(select) select.innerHTML = '<option value="">Selecciona parada...</option>' + stops.map(s => `<option value="${s.id}">${s.nombre}</option>`).join('');
     } catch (e) { console.error("Error stops"); }
+}
+
+// --- LÓGICA DE CORTES Y EVENTOS (Leaflet) ---
+let mapCortes = null;
+
+window.initCortesMap = function() {
+    if (mapCortes) {
+        setTimeout(() => { mapCortes.invalidateSize(); }, 200);
+        return;
+    }
+    const mapElement = document.getElementById('map-cortes');
+    if(!mapElement) return;
+
+    mapCortes = L.map('map-cortes').setView([37.1773, -3.5986], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(mapCortes);
+
+    fetchCortesData();
+}
+
+function moverMapa(lat, lon) {
+    if (!mapCortes) return;
+    mapCortes.invalidateSize();
+    mapCortes.flyTo([lat, lon], 16, { duration: 1.5 });
+    const mapElement = document.getElementById('map-cortes');
+    mapElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    mapCortes.eachLayer(layer => {
+        if(layer.getLatLng && layer.getLatLng().lat === lat && layer.getLatLng().lng === lon) {
+            setTimeout(() => layer.openPopup(), 500);
+        }
+    });
+}
+
+function createCustomIcon(colorHex) {
+    const svgHtml = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="36" height="36">
+        <path fill="${colorHex}" stroke="#ffffff" stroke-width="2" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+        <circle cx="12" cy="9" r="2.5" fill="#ffffff"/>
+    </svg>`;
+    
+    return L.divIcon({
+        className: 'custom-map-pin',
+        html: svgHtml,
+        iconSize: [36, 36],
+        iconAnchor: [18, 36],
+        popupAnchor: [0, -34]
+    });
+}
+
+async function fetchCortesData() {
+    const container = document.getElementById('cortes-lista-container');
+    const urlGranada = 'http://www.movilidadgranada.com/app/noticias/cortes-geojson.php';
+    const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(urlGranada);
+
+    try {
+        const response = await fetch(proxyUrl);
+        if (!response.ok) throw new Error("Error conexión");
+        const textoXML = await response.text();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(textoXML, "text/xml");
+        const items = xmlDoc.getElementsByTagName("item");
+        
+        let eventos = [];
+        const regexCoords = /Ubicación \(latitud,longitud\):\s*\(([\d.-]+),\s*([\d.-]+)\)/i;
+
+        const getEstiloTipo = (tipoTextoRaw, tituloFallback) => {
+            const texto = tipoTextoRaw ? tipoTextoRaw.toUpperCase().trim() : tituloFallback.toUpperCase();
+            if (texto.includes("TOTAL")) return { texto: tipoTextoRaw || "CORTE TOTAL", clase: "bg-red-600 text-white shadow-red-200", colorHex: "#dc2626" };
+            if (texto.includes("PARCIAL")) return { texto: tipoTextoRaw || "CORTE PARCIAL", clase: "bg-orange-500 text-white shadow-orange-200", colorHex: "#f97316" };
+            if (texto.includes("PUNTUAL")) return { texto: tipoTextoRaw || "CORTE PUNTUAL", clase: "bg-yellow-500 text-white shadow-yellow-200", colorHex: "#eab308" };
+            if (texto.includes("MANIFESTACIÓN")) return { texto: "📢 MANIFESTACIÓN", clase: "bg-purple-600 text-white shadow-purple-200", colorHex: "#9333ea" };
+            if (texto.includes("OBRA")) return { texto: "🚧 OBRAS", clase: "bg-blue-600 text-white shadow-blue-200", colorHex: "#2563eb" };
+            return { texto: tipoTextoRaw || "⚠️ AVISO", clase: "bg-gray-600 text-white shadow-gray-200", colorHex: "#4b5563" };
+        };
+
+        for (let item of items) {
+            const titulo = item.getElementsByTagName("title")[0]?.textContent || "Sin título";
+            let rawDesc = item.getElementsByTagName("description")[0]?.textContent || "";
+            const pubDateStr = item.getElementsByTagName("pubDate")[0]?.textContent;
+            const fechaPub = pubDateStr ? new Date(pubDateStr) : new Date(0);
+
+            const matchTipo = rawDesc.match(/Tipo de corte:\s*([^<.\n]+)/i);
+            const tipoExplicit = matchTipo ? matchTipo[1].trim() : null;
+            const regexFin = /(?:<p>)?Fin de(?: la)? publicaci[óo]n:\s*([^<\n]+)(?:<\/p>)?/i;
+            const matchFin = rawDesc.match(regexFin);
+            const finExplicit = matchFin ? matchFin[1].trim() : null;
+            const matchCoords = rawDesc.match(regexCoords);
+
+            let descLimpia = rawDesc
+                .replace(regexCoords, "")
+                .replace(/Tipo de corte:\s*([^<.\n]+)/i, "")
+                .replace(regexFin, "")
+                .replace(/<[^>]*>/g, " ")
+                .replace(/Más info[\s\S]*$/i, "")
+                .replace(/\s+/g, " ")
+                .trim();
+
+            const estilo = getEstiloTipo(tipoExplicit, titulo);
+
+            eventos.push({
+                titulo: titulo,
+                descripcion: descLimpia,
+                fechaPub: fechaPub,
+                fechaFin: finExplicit,
+                tipo: estilo,
+                lat: matchCoords ? parseFloat(matchCoords[1]) : null,
+                lon: matchCoords ? parseFloat(matchCoords[2]) : null
+            });
+        }
+
+        eventos.sort((a, b) => b.fechaPub - a.fechaPub);
+
+        container.innerHTML = "";
+        
+        if (eventos.length === 0) {
+            container.innerHTML = '<div class="p-4 text-center text-gray-500">No hay eventos recientes.</div>';
+            return;
+        }
+
+        eventos.forEach(ev => {
+            const fechaPublicacion = ev.fechaPub.toLocaleDateString("es-ES", { day: 'numeric', month: 'short' });
+
+            if (ev.lat && ev.lon && mapCortes) {
+                 const customIcon = createCustomIcon(ev.tipo.colorHex);
+                 L.marker([ev.lat, ev.lon], { icon: customIcon }).addTo(mapCortes)
+                  .bindPopup(`
+                    <div class="font-sans text-center min-w-[140px]">
+                        <span class="inline-block text-[10px] font-bold uppercase px-2 py-0.5 rounded mb-1 ${ev.tipo.clase}">
+                            ${ev.tipo.texto}
+                        </span>
+                        <h3 class="font-bold text-gray-800 text-sm leading-tight">${ev.titulo}</h3>
+                    </div>
+                  `);
+            }
+
+            const itemDiv = document.createElement('div');
+            itemDiv.className = "bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 mb-4 group";
+            
+            const cajaFinPublicacion = ev.fechaFin 
+                ? `<div class="mt-3 inline-flex items-center gap-2 bg-gray-100 border border-gray-200 rounded-lg px-3 py-1.5 shadow-sm">
+                     <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">📅 Fin:</span>
+                     <span class="text-xs font-mono font-bold text-gray-800 dark:text-gray-900">${ev.fechaFin}</span>
+                   </div>` 
+                : '';
+
+            itemDiv.innerHTML = `
+                <div class="flex flex-wrap gap-2 mb-2 items-center">
+                    <div class="${ev.tipo.clase} px-2 py-0.5 rounded shadow-sm text-[10px] font-black uppercase tracking-wide">
+                        ${ev.tipo.texto}
+                    </div>
+                    <span class="ml-auto text-[10px] text-gray-400">
+                        Pub: ${fechaPublicacion}
+                    </span>
+                </div>
+
+                <h4 class="font-bold text-gray-800 text-base mb-1 leading-snug group-hover:text-blue-600 transition-colors">
+                    ${ev.titulo}
+                </h4>
+
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    ${ev.descripcion}
+                </p>
+
+                <div class="flex flex-wrap items-end justify-between gap-2">
+                    ${cajaFinPublicacion}
+
+                    ${ev.lat ? `
+                    <button class="btn-localizar ml-auto mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors cursor-pointer">
+                        📍 Mapa
+                    </button>
+                    ` : ''}
+                </div>
+            `;
+
+            if (ev.lat) {
+                const btn = itemDiv.querySelector('.btn-localizar');
+                if(btn) {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        moverMapa(ev.lat, ev.lon);
+                    });
+                }
+            }
+            container.appendChild(itemDiv);
+        });
+
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = `<div class="p-4 text-center"><p class="text-red-500 font-bold mb-1">Error cargando datos</p></div>`;
+    }
 }
