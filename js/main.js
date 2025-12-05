@@ -236,14 +236,13 @@ function renderFavorites(type) {
 
     favs.forEach(fav => {
         const btn = document.createElement('div');
-        // AÑADIDO: 'max-w-full' para evitar overflow horizontal
-        // ELIMINADO: clases 'dark:...'
+        // 'max-w-full' para evitar overflow
         btn.className = `cursor-pointer text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-2 transition-all shadow-sm border border-gray-200 max-w-full
             ${type === 'bus' 
                 ? 'bg-red-50 text-red-700 hover:bg-red-100 border-red-100' 
                 : 'bg-green-50 text-green-700 hover:bg-green-100 border-green-100'}`;
         
-        // AÑADIDO: 'truncate' para cortar textos largos
+        // 'truncate' corta textos largos
         btn.innerHTML = `<span class="truncate">★ ${fav.name}</span>`; 
         
         btn.onclick = () => {
@@ -281,13 +280,14 @@ window.searchStop = async function() {
             : '<path fill="none" stroke="currentColor" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.85L7 14.14 2 9.27l6.91-1.01L12 2z"/>'; 
         const starClass = isFav ? 'text-yellow-400' : 'text-gray-400';
 
-        // ELIMINADO: clases 'dark:...'
+        // CORRECCIÓN CRÍTICA: añadido 'min-w-0' y 'flex-1' al contenedor del texto de la parada
+        // Esto obliga al flexbox a encoger el texto en lugar de ensanchar la página
         const headerHtml = `
             <div class="bg-gray-50 p-3 flex justify-between items-center border-b border-gray-100">
-                <div class="font-bold text-gray-700 text-xs uppercase tracking-wide truncate pr-2">
+                <div class="font-bold text-gray-700 text-xs uppercase tracking-wide truncate pr-2 flex-1 min-w-0">
                     ${nombreParada}
                 </div>
-                <button onclick="toggleFavorite('bus', '${stopCode}', '${nombreParada}')" class="p-1 hover:bg-gray-200 rounded-full transition">
+                <button onclick="toggleFavorite('bus', '${stopCode}', '${nombreParada}')" class="p-1 hover:bg-gray-200 rounded-full transition shrink-0">
                     <svg id="fav-btn-icon-bus" class="w-6 h-6 ${starClass}" viewBox="0 0 24 24">
                         ${starPath}
                     </svg>
@@ -295,7 +295,7 @@ window.searchStop = async function() {
             </div>`;
 
         if (!data?.proximos?.length) {
-            resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+            resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm w-full max-w-full">
                 ${headerHtml}
                 <div class="p-4 text-center text-gray-500 text-sm">Sin estimaciones.</div>
             </div>`;
@@ -312,15 +312,14 @@ window.searchStop = async function() {
             const regexRedundancy = new RegExp(`^(L[íi]nea\\s+)?${line}\\s*[-]?\\s*`, 'i');
             destinoClean = destinoClean.replace(regexRedundancy, '').trim();
 
-            // AÑADIDO: 'min-w-0' para que el texto flex no desborde
-            // ELIMINADO: 'dark:border-...'
+            // CORRECCIÓN CRÍTICA: 'min-w-0' y 'flex-1' aseguran que el nombre largo del destino no rompa el diseño
             return `
             <li class="flex justify-between items-center py-3 border-b border-gray-100 last:border-0">
                 <div class="flex items-center gap-3 flex-1 overflow-hidden min-w-0">
                     <span class="text-white text-xs font-bold px-2 py-1 rounded ${getLineColor(line)} min-w-[2.5rem] text-center shadow-sm shrink-0">
                         ${line}
                     </span>
-                    <span class="font-medium text-gray-700 text-sm leading-tight break-words truncate">
+                    <span class="font-medium text-gray-700 text-sm leading-tight break-words truncate flex-1 min-w-0">
                         ${destinoClean}
                     </span>
                 </div>
@@ -330,7 +329,7 @@ window.searchStop = async function() {
             </li>`;
         }).join('');
         
-        resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">${headerHtml}<ul class="px-3 pb-1">${list}</ul></div>`;
+        resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm w-full max-w-full">${headerHtml}<ul class="px-3 pb-1 w-full">${list}</ul></div>`;
     } catch (e) {
         resEl.innerHTML = isNight() ? `<div class="p-3 bg-blue-50 text-blue-800 rounded-xl text-center text-sm font-bold">🌙 Servicio Nocturno</div>` : `<p class="text-red-500 mt-2 text-center">⚠️ Error conexión</p>`;
     }
@@ -358,13 +357,13 @@ window.searchMetroStop = async function() {
             : '<path fill="none" stroke="currentColor" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.85L7 14.14 2 9.27l6.91-1.01L12 2z"/>';
         const starClass = isFav ? 'text-yellow-400' : 'text-gray-400';
 
-        // ELIMINADO: clases 'dark:...'
+        // CORRECCIÓN: 'min-w-0' y 'flex-1' aplicados
         const headerHtml = `
             <div class="bg-green-50 p-2 flex justify-between items-center border-b border-green-100">
-                <div class="font-bold text-green-800 text-xs uppercase truncate pr-2">
+                <div class="font-bold text-green-800 text-xs uppercase truncate pr-2 flex-1 min-w-0">
                     ${nombreParada}
                 </div>
-                <button onclick="toggleFavorite('metro', '${stopId}', '${nombreParada}')" class="p-1 hover:bg-white/50 rounded-full transition">
+                <button onclick="toggleFavorite('metro', '${stopId}', '${nombreParada}')" class="p-1 hover:bg-white/50 rounded-full transition shrink-0">
                     <svg id="fav-btn-icon-metro" class="w-6 h-6 ${starClass}" viewBox="0 0 24 24">
                         ${starPath}
                     </svg>
@@ -372,7 +371,7 @@ window.searchMetroStop = async function() {
             </div>`;
 
         if (!data?.proximos?.length) {
-            resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden w-full max-w-full">
                 ${headerHtml}
                 <div class="p-4 bg-gray-50 text-center text-sm text-gray-500">Sin trenes próximos.</div>
             </div>`;
@@ -381,13 +380,13 @@ window.searchMetroStop = async function() {
 
         const list = data.proximos.map(p => `
             <li class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
-                <span class="font-medium text-gray-700 text-sm">Hacia ${p.direccion}</span>
+                <span class="font-medium text-gray-700 text-sm truncate flex-1 min-w-0">Hacia ${p.direccion}</span>
                 ${p.minutos === 0 
-                    ? '<span class="text-red-600 font-black">LLEGANDO</span>' 
-                    : `<span class="text-green-600 font-bold">${p.minutos} min</span>`}
+                    ? '<span class="text-red-600 font-black shrink-0 ml-2">LLEGANDO</span>' 
+                    : `<span class="text-green-600 font-bold shrink-0 ml-2">${p.minutos} min</span>`}
             </li>`).join('');
             
-        resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">${headerHtml}<ul class="p-3">${list}</ul></div>`;
+        resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden w-full max-w-full">${headerHtml}<ul class="p-3 w-full">${list}</ul></div>`;
     } catch (e) {
         resEl.innerHTML = isNight() ? `<div class="p-3 bg-green-50 text-green-800 rounded-xl text-center text-sm font-bold">🌙 Servicio Nocturno</div>` : `<p class="text-red-500 mt-2 text-center">⚠️ Error conexión</p>`;
     }
