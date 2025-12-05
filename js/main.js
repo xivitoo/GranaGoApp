@@ -98,9 +98,9 @@ window.navigateTo = function(viewId) {
     }
 }
 
-// --- LÓGICA MAPA ZBE (MODAL PANTALLA COMPLETA) OPTIMIZADA ---
+// --- LÓGICA MAPA ZBE (MODAL PANTALLA COMPLETA) ---
 let modalState = {
-    scale: 0.25, // Zoom inicial
+    scale: 0.25,
     pX: 0,
     pY: 0,
     isDragging: false,
@@ -112,14 +112,12 @@ let modalState = {
     initialScale: 0.25
 };
 
-// Variable para controlar el bucle de renderizado
 let isTicking = false;
 
 window.openZbeModal = function() {
     const modal = document.getElementById('zbe-modal');
     if (!modal) return;
     modal.classList.remove('hidden');
-    // Pequeño delay para permitir que el display:block renderice antes de la opacidad
     requestAnimationFrame(() => {
         modal.classList.remove('opacity-0');
     });
@@ -134,7 +132,7 @@ window.closeZbeModal = function() {
 }
 
 function resetModalState() {
-    const zoomInicial = 0.5; // Ajustado para que se vea mejor de inicio en móviles
+    const zoomInicial = 0.5;
     modalState = { 
         scale: zoomInicial, 
         pX: 0, 
@@ -150,7 +148,6 @@ function resetModalState() {
     requestUpdate();
 }
 
-// Función que solicita el pintado en el próximo frame
 function requestUpdate() {
     if (!isTicking) {
         requestAnimationFrame(updateModalTransform);
@@ -158,101 +155,13 @@ function requestUpdate() {
     }
 }
 
-// La función que realmente toca el DOM
 function updateModalTransform() {
     const modalImg = document.getElementById('zbe-modal-img');
     if (modalImg) {
-        // Usamos translate3d para forzar GPU
         modalImg.style.transform = `translate3d(${modalState.pX}px, ${modalState.pY}px, 0) scale(${modalState.scale})`;
     }
     isTicking = false;
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    loadMetroStops(); 
-
-    const modalContainer = document.getElementById('zbe-modal');
-    // Prevenimos gestos por defecto del navegador en el contenedor
-    if (modalContainer) {
-        modalContainer.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
-        
-        // ZOOM RUEDA RATÓN (Desktop)
-        modalContainer.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            const delta = e.deltaY > 0 ? 0.9 : 1.1;
-            modalState.scale = Math.min(Math.max(0.1, modalState.scale * delta), 8);
-            requestUpdate();
-        }, { passive: false });
-
-        // INICIO (Touch/Click)
-        const startDrag = (e) => {
-            if (e.touches && e.touches.length === 2) {
-                // Modo Zoom Pellizco
-                modalState.isDragging = false;
-                modalState.initialDist = Math.hypot(
-                    e.touches[0].pageX - e.touches[1].pageX,
-                    e.touches[0].pageY - e.touches[1].pageY
-                );
-                modalState.initialScale = modalState.scale;
-            } else if (!e.touches || e.touches.length === 1) {
-                // Modo Arrastre
-                modalState.isDragging = true;
-                modalState.startX = e.touches ? e.touches[0].clientX : e.clientX;
-                modalState.startY = e.touches ? e.touches[0].clientY : e.clientY;
-                modalState.lastX = modalState.pX;
-                modalState.lastY = modalState.pY;
-                const img = document.getElementById('zbe-modal-img');
-                if(img) img.style.cursor = 'grabbing';
-            }
-        };
-
-        // MOVIMIENTO
-        const doDrag = (e) => {
-            // Zoom Pellizco
-            if (e.touches && e.touches.length === 2 && modalState.initialDist > 0) {
-                const currentDist = Math.hypot(
-                    e.touches[0].pageX - e.touches[1].pageX,
-                    e.touches[0].pageY - e.touches[1].pageY
-                );
-                const scaleFactor = currentDist / modalState.initialDist;
-                modalState.scale = Math.min(Math.max(0.1, modalState.initialScale * scaleFactor), 8);
-                requestUpdate();
-                return;
-            }
-
-            // Arrastre
-            if (!modalState.isDragging) return;
-
-            const x = e.touches ? e.touches[0].clientX : e.clientX;
-            const y = e.touches ? e.touches[0].clientY : e.clientY;
-            
-            const deltaX = x - modalState.startX;
-            const deltaY = y - modalState.startY;
-
-            modalState.pX = modalState.lastX + deltaX;
-            modalState.pY = modalState.lastY + deltaY;
-            
-            requestUpdate();
-        };
-
-        const endDrag = () => {
-            modalState.isDragging = false;
-            modalState.initialDist = 0;
-            const img = document.getElementById('zbe-modal-img');
-            if(img) img.style.cursor = 'grab';
-        };
-
-        modalContainer.addEventListener('mousedown', startDrag);
-        modalContainer.addEventListener('touchstart', startDrag, { passive: false });
-        
-        window.addEventListener('mousemove', doDrag);
-        window.addEventListener('touchmove', doDrag, { passive: false });
-        
-        window.addEventListener('mouseup', endDrag);
-        window.addEventListener('touchend', endDrag);
-    }
-});
-
 
 // --- LÓGICA TRANSPORTE ---
 const METRO_NAMES = { "3_1116": "M-156", "3_1117": "M-157", "3_644": "0111", "3_701": "0256", "3_739": "0305" };
@@ -274,6 +183,83 @@ function getLineColor(id) {
 
 function isNight() { const h = new Date().getHours(); return (h >= 0 && h < 6) || (h === 23 && new Date().getMinutes() >= 30); }
 
+// --- GESTIÓN DE FAVORITOS ---
+
+function getFavorites(type) {
+    const key = type === 'bus' ? 'fav_bus' : 'fav_metro';
+    return JSON.parse(localStorage.getItem(key)) || [];
+}
+
+function toggleFavorite(type, id, name) {
+    const key = type === 'bus' ? 'fav_bus' : 'fav_metro';
+    let favs = getFavorites(type);
+    const exists = favs.find(f => f.id === id);
+
+    if (exists) {
+        favs = favs.filter(f => f.id !== id); // Eliminar
+    } else {
+        favs.push({ id, name }); // Añadir
+    }
+
+    localStorage.setItem(key, JSON.stringify(favs));
+    
+    // Actualizar UI
+    renderFavorites(type);
+    
+    // Actualizar icono de estrella si hay una búsqueda activa
+    const btnIcon = document.getElementById(`fav-btn-icon-${type}`);
+    if (btnIcon) {
+        updateStarIcon(btnIcon, !exists);
+    }
+}
+
+function updateStarIcon(element, isFav) {
+    if (isFav) {
+        // Estrella Rellena (Solid)
+        element.innerHTML = '<path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>';
+        element.classList.add('text-yellow-400');
+        element.classList.remove('text-gray-400');
+    } else {
+        // Estrella Borde (Outline)
+        element.innerHTML = '<path fill="none" stroke="currentColor" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.85L7 14.14 2 9.27l6.91-1.01L12 2z"/>';
+        element.classList.add('text-gray-400');
+        element.classList.remove('text-yellow-400');
+    }
+}
+
+function renderFavorites(type) {
+    const container = document.getElementById(type === 'bus' ? 'bus-favorites' : 'metro-favorites');
+    if (!container) return;
+
+    const favs = getFavorites(type);
+    container.innerHTML = '';
+
+    favs.forEach(fav => {
+        const btn = document.createElement('div');
+        // Estilos del chip de favorito
+        btn.className = `cursor-pointer text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-2 transition-all shadow-sm border border-gray-200 
+            ${type === 'bus' 
+                ? 'bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800' 
+                : 'bg-green-50 text-green-700 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800'}`;
+        
+        btn.innerHTML = `<span>★ ${fav.name}</span>`; // Nombre corto
+        
+        // Al hacer click, ejecutamos la búsqueda
+        btn.onclick = () => {
+            if (type === 'bus') {
+                document.getElementById('stop-code').value = fav.id;
+                searchStop();
+            } else {
+                document.getElementById('metro-stop-select').value = fav.id;
+                searchMetroStop();
+            }
+        };
+        container.appendChild(btn);
+    });
+}
+
+
+// --- BÚSQUEDA BUS ACTUALIZADA ---
 window.searchStop = async function() {
     const stopCode = document.getElementById('stop-code').value.trim();
     const resEl = document.getElementById('bus-results');
@@ -286,8 +272,32 @@ window.searchStop = async function() {
         if (!res.ok) throw new Error();
         const data = await res.json();
         
+        const nombreParada = data.parada?.nombre || `Parada ${stopCode}`;
+        
+        // Comprobar si es favorito
+        const isFav = getFavorites('bus').some(f => f.id === stopCode);
+        const starPath = isFav 
+            ? '<path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>' 
+            : '<path fill="none" stroke="currentColor" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.85L7 14.14 2 9.27l6.91-1.01L12 2z"/>'; 
+        const starClass = isFav ? 'text-yellow-400' : 'text-gray-400';
+
+        const headerHtml = `
+            <div class="bg-gray-50 dark:bg-gray-800 p-3 flex justify-between items-center border-b border-gray-100 dark:border-gray-700">
+                <div class="font-bold text-gray-700 dark:text-gray-200 text-xs uppercase tracking-wide truncate pr-2">
+                    ${nombreParada}
+                </div>
+                <button onclick="toggleFavorite('bus', '${stopCode}', '${nombreParada}')" class="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition">
+                    <svg id="fav-btn-icon-bus" class="w-6 h-6 ${starClass}" viewBox="0 0 24 24">
+                        ${starPath}
+                    </svg>
+                </button>
+            </div>`;
+
         if (!data?.proximos?.length) {
-            resEl.innerHTML = `<div class="p-4 bg-gray-50 rounded-xl text-center"><p class="font-bold">Parada ${data.parada?.nombre || stopCode}</p><p class="text-gray-500">Sin estimaciones.</p></div>`;
+            resEl.innerHTML = `<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
+                ${headerHtml}
+                <div class="p-4 text-center text-gray-500 text-sm">Sin estimaciones.</div>
+            </div>`;
             return;
         }
         
@@ -295,19 +305,19 @@ window.searchStop = async function() {
             const line = METRO_NAMES[p.linea?.id] || p.linea?.id || '?';
             const time = p.minutos === 0 
                 ? '<span class="text-red-600 font-black animate-pulse whitespace-nowrap">LLEGANDO</span>' 
-                : `<span class="text-blue-600 font-bold whitespace-nowrap">${p.minutos} min</span>`;
+                : `<span class="text-blue-600 dark:text-blue-400 font-bold whitespace-nowrap">${p.minutos} min</span>`;
 
             let destinoClean = p.destino;
             const regexRedundancy = new RegExp(`^(L[íi]nea\\s+)?${line}\\s*[-]?\\s*`, 'i');
             destinoClean = destinoClean.replace(regexRedundancy, '').trim();
 
             return `
-            <li class="flex justify-between items-center py-3 border-b border-gray-100 last:border-0">
+            <li class="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
                 <div class="flex items-center gap-3 flex-1 overflow-hidden">
                     <span class="text-white text-xs font-bold px-2 py-1 rounded ${getLineColor(line)} min-w-[2.5rem] text-center shadow-sm shrink-0">
                         ${line}
                     </span>
-                    <span class="font-medium text-gray-700 text-sm leading-tight break-words">
+                    <span class="font-medium text-gray-700 dark:text-gray-200 text-sm leading-tight break-words">
                         ${destinoClean}
                     </span>
                 </div>
@@ -317,27 +327,64 @@ window.searchStop = async function() {
             </li>`;
         }).join('');
         
-        resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden"><div class="bg-gray-50 p-2 text-center font-bold text-gray-700 text-xs uppercase tracking-wide">Parada: ${data.parada?.nombre}</div><ul class="px-3 pb-1">${list}</ul></div>`;
+        resEl.innerHTML = `<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">${headerHtml}<ul class="px-3 pb-1">${list}</ul></div>`;
     } catch (e) {
         resEl.innerHTML = isNight() ? `<div class="p-3 bg-blue-50 text-blue-800 rounded-xl text-center text-sm font-bold">🌙 Servicio Nocturno</div>` : `<p class="text-red-500 mt-2 text-center">⚠️ Error conexión</p>`;
     }
 }
 
+// --- BÚSQUEDA METRO ACTUALIZADA ---
 window.searchMetroStop = async function() {
     const select = document.getElementById('metro-stop-select');
     const resEl = document.getElementById('metro-results');
-    if (!select.value) return;
+    const stopId = select.value;
 
+    if (!stopId) return;
+
+    const nombreParada = select.options[select.selectedIndex].text;
     resEl.innerHTML = '<div class="text-center py-4"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto"></div></div>';
+    
     try {
-        const res = await fetch(`${API_BASE_URL}/metro/llegadas/${select.value}`);
+        const res = await fetch(`${API_BASE_URL}/metro/llegadas/${stopId}`);
         if(!res.ok) throw new Error();
         const data = await res.json();
 
-        if (!data?.proximos?.length) return resEl.innerHTML = `<div class="p-4 bg-gray-50 rounded-xl text-center text-sm text-gray-500">Sin trenes próximos.</div>`;
+        // Comprobar si es favorito
+        const isFav = getFavorites('metro').some(f => f.id === stopId);
+        const starPath = isFav 
+            ? '<path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>' 
+            : '<path fill="none" stroke="currentColor" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.85L7 14.14 2 9.27l6.91-1.01L12 2z"/>';
+        const starClass = isFav ? 'text-yellow-400' : 'text-gray-400';
 
-        const list = data.proximos.map(p => `<li class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0"><span class="font-medium text-gray-700 text-sm">Hacia ${p.direccion}</span>${p.minutos === 0 ? '<span class="text-red-600 font-black">YA</span>' : `<span class="text-green-600 font-bold">${p.minutos} min</span>`}</li>`).join('');
-        resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden"><div class="bg-green-50 p-2 text-center font-bold text-green-800 text-xs uppercase">${select.options[select.selectedIndex].text}</div><ul class="p-3">${list}</ul></div>`;
+        const headerHtml = `
+            <div class="bg-green-50 dark:bg-green-900/30 p-2 flex justify-between items-center border-b border-green-100 dark:border-green-800">
+                <div class="font-bold text-green-800 dark:text-green-300 text-xs uppercase truncate pr-2">
+                    ${nombreParada}
+                </div>
+                <button onclick="toggleFavorite('metro', '${stopId}', '${nombreParada}')" class="p-1 hover:bg-white/50 rounded-full transition">
+                    <svg id="fav-btn-icon-metro" class="w-6 h-6 ${starClass}" viewBox="0 0 24 24">
+                        ${starPath}
+                    </svg>
+                </button>
+            </div>`;
+
+        if (!data?.proximos?.length) {
+            resEl.innerHTML = `<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                ${headerHtml}
+                <div class="p-4 bg-gray-50 dark:bg-gray-800/50 text-center text-sm text-gray-500">Sin trenes próximos.</div>
+            </div>`;
+            return;
+        }
+
+        const list = data.proximos.map(p => `
+            <li class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                <span class="font-medium text-gray-700 dark:text-gray-200 text-sm">Hacia ${p.direccion}</span>
+                ${p.minutos === 0 
+                    ? '<span class="text-red-600 font-black">LLEGANDO</span>' 
+                    : `<span class="text-green-600 dark:text-green-400 font-bold">${p.minutos} min</span>`}
+            </li>`).join('');
+            
+        resEl.innerHTML = `<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">${headerHtml}<ul class="p-3">${list}</ul></div>`;
     } catch (e) {
         resEl.innerHTML = isNight() ? `<div class="p-3 bg-green-50 text-green-800 rounded-xl text-center text-sm font-bold">🌙 Servicio Nocturno</div>` : `<p class="text-red-500 mt-2 text-center">⚠️ Error conexión</p>`;
     }
@@ -544,3 +591,86 @@ async function fetchCortesData() {
         container.innerHTML = `<div class="p-4 text-center"><p class="text-red-500 font-bold mb-1">Error cargando datos</p></div>`;
     }
 }
+
+// --- INIT LISTENERS ---
+document.addEventListener('DOMContentLoaded', () => {
+    loadMetroStops();
+    renderFavorites('bus');
+    renderFavorites('metro');
+
+    const modalContainer = document.getElementById('zbe-modal');
+    if (modalContainer) {
+        modalContainer.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+        
+        // ZOOM RUEDA RATÓN
+        modalContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            modalState.scale = Math.min(Math.max(0.1, modalState.scale * delta), 8);
+            requestUpdate();
+        }, { passive: false });
+
+        // INICIO GESTOS
+        const startDrag = (e) => {
+            if (e.touches && e.touches.length === 2) {
+                modalState.isDragging = false;
+                modalState.initialDist = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+                modalState.initialScale = modalState.scale;
+            } else if (!e.touches || e.touches.length === 1) {
+                modalState.isDragging = true;
+                modalState.startX = e.touches ? e.touches[0].clientX : e.clientX;
+                modalState.startY = e.touches ? e.touches[0].clientY : e.clientY;
+                modalState.lastX = modalState.pX;
+                modalState.lastY = modalState.pY;
+                const img = document.getElementById('zbe-modal-img');
+                if(img) img.style.cursor = 'grabbing';
+            }
+        };
+
+        // MOVIMIENTO
+        const doDrag = (e) => {
+            if (e.touches && e.touches.length === 2 && modalState.initialDist > 0) {
+                const currentDist = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+                const scaleFactor = currentDist / modalState.initialDist;
+                modalState.scale = Math.min(Math.max(0.1, modalState.initialScale * scaleFactor), 8);
+                requestUpdate();
+                return;
+            }
+
+            if (!modalState.isDragging) return;
+
+            const x = e.touches ? e.touches[0].clientX : e.clientX;
+            const y = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            const deltaX = x - modalState.startX;
+            const deltaY = y - modalState.startY;
+
+            modalState.pX = modalState.lastX + deltaX;
+            modalState.pY = modalState.lastY + deltaY;
+            
+            requestUpdate();
+        };
+
+        const endDrag = () => {
+            modalState.isDragging = false;
+            modalState.initialDist = 0;
+            const img = document.getElementById('zbe-modal-img');
+            if(img) img.style.cursor = 'grab';
+        };
+
+        modalContainer.addEventListener('mousedown', startDrag);
+        modalContainer.addEventListener('touchstart', startDrag, { passive: false });
+        
+        window.addEventListener('mousemove', doDrag);
+        window.addEventListener('touchmove', doDrag, { passive: false });
+        
+        window.addEventListener('mouseup', endDrag);
+        window.addEventListener('touchend', endDrag);
+    }
+});
