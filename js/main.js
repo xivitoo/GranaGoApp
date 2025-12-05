@@ -236,17 +236,16 @@ function renderFavorites(type) {
 
     favs.forEach(fav => {
         const btn = document.createElement('div');
-        // Estilos del chip de favorito
-        // AÑADIDO: 'max-w-full' para asegurar que el botón nunca sea más ancho que su contenedor padre
+        // AÑADIDO: 'max-w-full' para evitar overflow horizontal
+        // ELIMINADO: clases 'dark:...'
         btn.className = `cursor-pointer text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-2 transition-all shadow-sm border border-gray-200 max-w-full
             ${type === 'bus' 
-                ? 'bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800' 
-                : 'bg-green-50 text-green-700 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800'}`;
+                ? 'bg-red-50 text-red-700 hover:bg-red-100 border-red-100' 
+                : 'bg-green-50 text-green-700 hover:bg-green-100 border-green-100'}`;
         
-        // MODIFICADO: Añadido 'truncate' al span para cortar el texto con "..." si es muy largo
+        // AÑADIDO: 'truncate' para cortar textos largos
         btn.innerHTML = `<span class="truncate">★ ${fav.name}</span>`; 
         
-        // Al hacer click, ejecutamos la búsqueda
         btn.onclick = () => {
             if (type === 'bus') {
                 document.getElementById('stop-code').value = fav.id;
@@ -276,19 +275,19 @@ window.searchStop = async function() {
         
         const nombreParada = data.parada?.nombre || `Parada ${stopCode}`;
         
-        // Comprobar si es favorito
         const isFav = getFavorites('bus').some(f => f.id === stopCode);
         const starPath = isFav 
             ? '<path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>' 
             : '<path fill="none" stroke="currentColor" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.85L7 14.14 2 9.27l6.91-1.01L12 2z"/>'; 
         const starClass = isFav ? 'text-yellow-400' : 'text-gray-400';
 
+        // ELIMINADO: clases 'dark:...'
         const headerHtml = `
-            <div class="bg-gray-50 dark:bg-gray-800 p-3 flex justify-between items-center border-b border-gray-100 dark:border-gray-700">
-                <div class="font-bold text-gray-700 dark:text-gray-200 text-xs uppercase tracking-wide truncate pr-2">
+            <div class="bg-gray-50 p-3 flex justify-between items-center border-b border-gray-100">
+                <div class="font-bold text-gray-700 text-xs uppercase tracking-wide truncate pr-2">
                     ${nombreParada}
                 </div>
-                <button onclick="toggleFavorite('bus', '${stopCode}', '${nombreParada}')" class="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition">
+                <button onclick="toggleFavorite('bus', '${stopCode}', '${nombreParada}')" class="p-1 hover:bg-gray-200 rounded-full transition">
                     <svg id="fav-btn-icon-bus" class="w-6 h-6 ${starClass}" viewBox="0 0 24 24">
                         ${starPath}
                     </svg>
@@ -296,7 +295,7 @@ window.searchStop = async function() {
             </div>`;
 
         if (!data?.proximos?.length) {
-            resEl.innerHTML = `<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
+            resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
                 ${headerHtml}
                 <div class="p-4 text-center text-gray-500 text-sm">Sin estimaciones.</div>
             </div>`;
@@ -307,19 +306,21 @@ window.searchStop = async function() {
             const line = METRO_NAMES[p.linea?.id] || p.linea?.id || '?';
             const time = p.minutos === 0 
                 ? '<span class="text-red-600 font-black animate-pulse whitespace-nowrap">LLEGANDO</span>' 
-                : `<span class="text-blue-600 dark:text-blue-400 font-bold whitespace-nowrap">${p.minutos} min</span>`;
+                : `<span class="text-blue-600 font-bold whitespace-nowrap">${p.minutos} min</span>`;
 
             let destinoClean = p.destino;
             const regexRedundancy = new RegExp(`^(L[íi]nea\\s+)?${line}\\s*[-]?\\s*`, 'i');
             destinoClean = destinoClean.replace(regexRedundancy, '').trim();
 
+            // AÑADIDO: 'min-w-0' para que el texto flex no desborde
+            // ELIMINADO: 'dark:border-...'
             return `
-            <li class="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                <div class="flex items-center gap-3 flex-1 overflow-hidden">
+            <li class="flex justify-between items-center py-3 border-b border-gray-100 last:border-0">
+                <div class="flex items-center gap-3 flex-1 overflow-hidden min-w-0">
                     <span class="text-white text-xs font-bold px-2 py-1 rounded ${getLineColor(line)} min-w-[2.5rem] text-center shadow-sm shrink-0">
                         ${line}
                     </span>
-                    <span class="font-medium text-gray-700 dark:text-gray-200 text-sm leading-tight break-words">
+                    <span class="font-medium text-gray-700 text-sm leading-tight break-words truncate">
                         ${destinoClean}
                     </span>
                 </div>
@@ -329,7 +330,7 @@ window.searchStop = async function() {
             </li>`;
         }).join('');
         
-        resEl.innerHTML = `<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">${headerHtml}<ul class="px-3 pb-1">${list}</ul></div>`;
+        resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">${headerHtml}<ul class="px-3 pb-1">${list}</ul></div>`;
     } catch (e) {
         resEl.innerHTML = isNight() ? `<div class="p-3 bg-blue-50 text-blue-800 rounded-xl text-center text-sm font-bold">🌙 Servicio Nocturno</div>` : `<p class="text-red-500 mt-2 text-center">⚠️ Error conexión</p>`;
     }
@@ -351,16 +352,16 @@ window.searchMetroStop = async function() {
         if(!res.ok) throw new Error();
         const data = await res.json();
 
-        // Comprobar si es favorito
         const isFav = getFavorites('metro').some(f => f.id === stopId);
         const starPath = isFav 
             ? '<path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>' 
             : '<path fill="none" stroke="currentColor" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.85L7 14.14 2 9.27l6.91-1.01L12 2z"/>';
         const starClass = isFav ? 'text-yellow-400' : 'text-gray-400';
 
+        // ELIMINADO: clases 'dark:...'
         const headerHtml = `
-            <div class="bg-green-50 dark:bg-green-900/30 p-2 flex justify-between items-center border-b border-green-100 dark:border-green-800">
-                <div class="font-bold text-green-800 dark:text-green-300 text-xs uppercase truncate pr-2">
+            <div class="bg-green-50 p-2 flex justify-between items-center border-b border-green-100">
+                <div class="font-bold text-green-800 text-xs uppercase truncate pr-2">
                     ${nombreParada}
                 </div>
                 <button onclick="toggleFavorite('metro', '${stopId}', '${nombreParada}')" class="p-1 hover:bg-white/50 rounded-full transition">
@@ -371,22 +372,22 @@ window.searchMetroStop = async function() {
             </div>`;
 
         if (!data?.proximos?.length) {
-            resEl.innerHTML = `<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 ${headerHtml}
-                <div class="p-4 bg-gray-50 dark:bg-gray-800/50 text-center text-sm text-gray-500">Sin trenes próximos.</div>
+                <div class="p-4 bg-gray-50 text-center text-sm text-gray-500">Sin trenes próximos.</div>
             </div>`;
             return;
         }
 
         const list = data.proximos.map(p => `
-            <li class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                <span class="font-medium text-gray-700 dark:text-gray-200 text-sm">Hacia ${p.direccion}</span>
+            <li class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+                <span class="font-medium text-gray-700 text-sm">Hacia ${p.direccion}</span>
                 ${p.minutos === 0 
                     ? '<span class="text-red-600 font-black">LLEGANDO</span>' 
-                    : `<span class="text-green-600 dark:text-green-400 font-bold">${p.minutos} min</span>`}
+                    : `<span class="text-green-600 font-bold">${p.minutos} min</span>`}
             </li>`).join('');
             
-        resEl.innerHTML = `<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">${headerHtml}<ul class="p-3">${list}</ul></div>`;
+        resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">${headerHtml}<ul class="p-3">${list}</ul></div>`;
     } catch (e) {
         resEl.innerHTML = isNight() ? `<div class="p-3 bg-green-50 text-green-800 rounded-xl text-center text-sm font-bold">🌙 Servicio Nocturno</div>` : `<p class="text-red-500 mt-2 text-center">⚠️ Error conexión</p>`;
     }
