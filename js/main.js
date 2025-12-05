@@ -237,17 +237,14 @@ function renderFavorites(type) {
     favs.forEach(fav => {
         const btn = document.createElement('div');
         
-        // CORRECCIÓN: 'overflow-hidden' en el botón contenedor
-        btn.className = `cursor-pointer text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-2 transition-all shadow-sm border border-gray-200 max-w-full overflow-hidden
+        btn.className = `cursor-pointer text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-2 transition-all shadow-sm border border-gray-200 max-w-full
             ${type === 'bus' 
                 ? 'bg-red-50 text-red-700 hover:bg-red-100 border-red-100' 
                 : 'bg-green-50 text-green-700 hover:bg-green-100 border-green-100'}`;
         
-        // CORRECCIÓN CRÍTICA:
-        // 1. 'block': Para que el width funcione.
-        // 2. 'truncate': Para los puntos suspensivos.
-        // 3. 'max-w-[120px]': Un límite FÍSICO en píxeles. Esto asegura que en un móvil pequeño el texto no empuje el ancho total.
-        btn.innerHTML = `<span class="truncate block max-w-[120px] sm:max-w-[200px]">★ ${fav.name}</span>`; 
+        // CORRECCIÓN: Quitamos el truncate estricto del favorito, dejando que sea flexible pero seguro
+        // Usamos 'whitespace-nowrap' para que los botones de favoritos sean de una linea, pero con overflow-x en el contenedor padre si fuera necesario
+        btn.innerHTML = `<span>★ ${fav.name}</span>`; 
         
         btn.onclick = () => {
             if (type === 'bus') {
@@ -284,12 +281,11 @@ window.searchStop = async function() {
             : '<path fill="none" stroke="currentColor" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.85L7 14.14 2 9.27l6.91-1.01L12 2z"/>'; 
         const starClass = isFav ? 'text-yellow-400' : 'text-gray-400';
 
-        // HEADER: 'flex-1 min-w-0 overflow-hidden' en el contenedor del texto.
-        // Esto es esencial para que el texto se corte antes de expandir el div padre.
+        // HEADER: Permitimos que el nombre de la parada baje de línea (multilínea)
         const headerHtml = `
             <div class="bg-gray-50 p-3 flex justify-between items-center border-b border-gray-100 max-w-full">
-                <div class="flex-1 min-w-0 pr-2 overflow-hidden">
-                    <p class="font-bold text-gray-700 text-xs uppercase tracking-wide truncate block">
+                <div class="flex-1 min-w-0 pr-2">
+                    <p class="font-bold text-gray-700 text-xs uppercase tracking-wide leading-tight break-words">
                         ${nombreParada}
                     </p>
                 </div>
@@ -318,21 +314,20 @@ window.searchStop = async function() {
             const regexRedundancy = new RegExp(`^(L[íi]nea\\s+)?${line}\\s*[-]?\\s*`, 'i');
             destinoClean = destinoClean.replace(regexRedundancy, '').trim();
 
-            // LISTA: Usamos 'div' en lugar de span para el contenedor del texto,
-            // y aplicamos 'block' al texto truncado.
+            // LISTA: Usamos 'break-words' y 'leading-snug' para que el texto baje de línea
             return `
             <li class="flex justify-between items-center py-3 border-b border-gray-100 last:border-0 w-full max-w-full">
-                <div class="flex items-center gap-3 flex-1 overflow-hidden min-w-0">
+                <div class="flex items-center gap-3 flex-1 min-w-0">
                     <span class="text-white text-xs font-bold px-2 py-1 rounded ${getLineColor(line)} min-w-[2.5rem] text-center shadow-sm shrink-0">
                         ${line}
                     </span>
-                    <div class="flex-1 min-w-0 overflow-hidden">
-                        <p class="font-medium text-gray-700 text-sm leading-tight truncate block">
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-gray-700 text-sm leading-snug break-words">
                             ${destinoClean}
                         </p>
                     </div>
                 </div>
-                <div class="ml-3 shrink-0">
+                <div class="ml-3 shrink-0 text-right">
                     ${time}
                 </div>
             </li>`;
@@ -340,7 +335,7 @@ window.searchStop = async function() {
         
         resEl.innerHTML = `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm w-full max-w-full">${headerHtml}<ul class="px-3 pb-1 w-full">${list}</ul></div>`;
     } catch (e) {
-        resEl.innerHTML = isNight() ? `<div class="p-3 bg-blue-50 text-blue-800 rounded-xl text-center text-sm font-bold">🌙 Servicio Nocturno</div>` : `<p class="text-red-500 mt-2 text-center">⚠️ Error conexión</p>`;
+        resEl.innerHTML = isNight() ? `<div class="p-3 bg-blue-50 text-blue-800 rounded-xl text-center text-sm font-bold">🌙 Servicio Nocturno</div>` : `<p class="text-red-500 mt-2 text-center"⚠️ Error conexión</p>`;
     }
 }
 
@@ -366,11 +361,11 @@ window.searchMetroStop = async function() {
             : '<path fill="none" stroke="currentColor" stroke-width="2" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.85L7 14.14 2 9.27l6.91-1.01L12 2z"/>';
         const starClass = isFav ? 'text-yellow-400' : 'text-gray-400';
 
-        // HEADER BLINDADO
+        // HEADER: Multilínea permitido
         const headerHtml = `
             <div class="bg-green-50 p-2 flex justify-between items-center border-b border-green-100 max-w-full">
-                <div class="flex-1 min-w-0 pr-2 overflow-hidden">
-                    <p class="font-bold text-green-800 text-xs uppercase truncate block">
+                <div class="flex-1 min-w-0 pr-2">
+                    <p class="font-bold text-green-800 text-xs uppercase leading-tight break-words">
                         ${nombreParada}
                     </p>
                 </div>
@@ -389,11 +384,11 @@ window.searchMetroStop = async function() {
             return;
         }
 
-        // LISTA BLINDADA
+        // LISTA: Multilínea permitido
         const list = data.proximos.map(p => `
             <li class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0 w-full max-w-full">
-                <div class="flex-1 min-w-0 overflow-hidden">
-                    <p class="font-medium text-gray-700 text-sm truncate block">Hacia ${p.direccion}</p>
+                <div class="flex-1 min-w-0">
+                    <p class="font-medium text-gray-700 text-sm leading-snug break-words">Hacia ${p.direccion}</p>
                 </div>
                 ${p.minutos === 0 
                     ? '<span class="text-red-600 font-black shrink-0 ml-2">LLEGANDO</span>' 
