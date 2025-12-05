@@ -98,9 +98,9 @@ window.navigateTo = function(viewId) {
     }
 }
 
-// --- LÓGICA MAPA ZBE (MODAL PANTALLA COMPLETA) ---
+// --- LÓGICA MAPA ZBE (MODAL PANTALLA COMPLETA) OPTIMIZADA ---
 let modalState = {
-    scale: 1,
+    scale: 0.25, // Zoom inicial
     pX: 0,
     pY: 0,
     isDragging: false,
@@ -109,14 +109,20 @@ let modalState = {
     lastX: 0,
     lastY: 0,
     initialDist: 0,
-    initialScale: 1
+    initialScale: 0.25
 };
+
+// Variable para controlar el bucle de renderizado
+let isTicking = false;
 
 window.openZbeModal = function() {
     const modal = document.getElementById('zbe-modal');
     if (!modal) return;
     modal.classList.remove('hidden');
-    setTimeout(() => modal.classList.remove('opacity-0'), 10);
+    // Pequeño delay para permitir que el display:block renderice antes de la opacidad
+    requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+    });
     resetModalState();
 }
 
@@ -128,9 +134,7 @@ window.closeZbeModal = function() {
 }
 
 function resetModalState() {
-    // 1. AQUÍ DEFINIMOS EL ZOOM INICIAL QUE TÚ QUIERES (0.25)
-    const zoomInicial = 0.25; 
-
+    const zoomInicial = 0.5; // Ajustado para que se vea mejor de inicio en móviles
     modalState = { 
         scale: zoomInicial, 
         pX: 0, 
@@ -143,39 +147,47 @@ function resetModalState() {
         initialDist: 0, 
         initialScale: zoomInicial 
     };
-    updateModalTransform();
+    requestUpdate();
 }
 
-function updateModalTransform() {
-    const modalImg = document.getElementById('zbe-modal-img');
-    if (modalImg) {
-        modalImg.style.transform = `translate(${modalState.pX}px, ${modalState.pY}px) scale(${modalState.scale})`;
+// Función que solicita el pintado en el próximo frame
+function requestUpdate() {
+    if (!isTicking) {
+        requestAnimationFrame(updateModalTransform);
+        isTicking = true;
     }
 }
 
-// EVENT LISTENERS DEL MODAL E INICIALIZACIÓN
+// La función que realmente toca el DOM
+function updateModalTransform() {
+    const modalImg = document.getElementById('zbe-modal-img');
+    if (modalImg) {
+        // Usamos translate3d para forzar GPU
+        modalImg.style.transform = `translate3d(${modalState.pX}px, ${modalState.pY}px, 0) scale(${modalState.scale})`;
+    }
+    isTicking = false;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    loadMetroStops(); // Carga inicial de metro
+    loadMetroStops(); 
 
     const modalContainer = document.getElementById('zbe-modal');
-    const modalImg = document.getElementById('zbe-modal-img');
-    
-    if (modalContainer && modalImg) {
-        // ZOOM RUEDA RATÓN
+    // Prevenimos gestos por defecto del navegador en el contenedor
+    if (modalContainer) {
+        modalContainer.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+        
+        // ZOOM RUEDA RATÓN (Desktop)
         modalContainer.addEventListener('wheel', (e) => {
             e.preventDefault();
             const delta = e.deltaY > 0 ? 0.9 : 1.1;
-            
-            // 2. CORREGIDO: Bajamos el límite mínimo a 0.1 para que no salte al estar en 0.25
-            const newScale = Math.min(Math.max(0.1, modalState.scale * delta), 5);
-            
-            modalState.scale = newScale;
-            updateModalTransform();
+            modalState.scale = Math.min(Math.max(0.1, modalState.scale * delta), 8);
+            requestUpdate();
         }, { passive: false });
 
-        // INICIO ARRASTRE / TOUCH
+        // INICIO (Touch/Click)
         const startDrag = (e) => {
             if (e.touches && e.touches.length === 2) {
+                // Modo Zoom Pellizco
                 modalState.isDragging = false;
                 modalState.initialDist = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,
@@ -183,36 +195,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 );
                 modalState.initialScale = modalState.scale;
             } else if (!e.touches || e.touches.length === 1) {
+                // Modo Arrastre
                 modalState.isDragging = true;
                 modalState.startX = e.touches ? e.touches[0].clientX : e.clientX;
                 modalState.startY = e.touches ? e.touches[0].clientY : e.clientY;
                 modalState.lastX = modalState.pX;
                 modalState.lastY = modalState.pY;
-                modalImg.style.cursor = 'grabbing';
+                const img = document.getElementById('zbe-modal-img');
+                if(img) img.style.cursor = 'grabbing';
             }
         };
 
         // MOVIMIENTO
         const doDrag = (e) => {
-            // Lógica Zoom Pellizco
+            // Zoom Pellizco
             if (e.touches && e.touches.length === 2 && modalState.initialDist > 0) {
-                e.preventDefault();
                 const currentDist = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,
                     e.touches[0].pageY - e.touches[1].pageY
                 );
                 const scaleFactor = currentDist / modalState.initialDist;
-                
-                // 3. CORREGIDO: Bajamos el límite mínimo a 0.1 aquí también
-                modalState.scale = Math.min(Math.max(0.1, modalState.initialScale * scaleFactor), 5);
-                
-                updateModalTransform();
+                modalState.scale = Math.min(Math.max(0.1, modalState.initialScale * scaleFactor), 8);
+                requestUpdate();
                 return;
             }
 
-            // Lógica Arrastre
+            // Arrastre
             if (!modalState.isDragging) return;
-            e.preventDefault();
 
             const x = e.touches ? e.touches[0].clientX : e.clientX;
             const y = e.touches ? e.touches[0].clientY : e.clientY;
@@ -223,13 +232,14 @@ document.addEventListener('DOMContentLoaded', () => {
             modalState.pX = modalState.lastX + deltaX;
             modalState.pY = modalState.lastY + deltaY;
             
-            updateModalTransform();
+            requestUpdate();
         };
 
         const endDrag = () => {
             modalState.isDragging = false;
             modalState.initialDist = 0;
-            if(modalImg) modalImg.style.cursor = 'grab';
+            const img = document.getElementById('zbe-modal-img');
+            if(img) img.style.cursor = 'grab';
         };
 
         modalContainer.addEventListener('mousedown', startDrag);
@@ -242,6 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('touchend', endDrag);
     }
 });
+
 
 // --- LÓGICA TRANSPORTE ---
 const METRO_NAMES = { "3_1116": "M-156", "3_1117": "M-157", "3_644": "0111", "3_701": "0256", "3_739": "0305" };

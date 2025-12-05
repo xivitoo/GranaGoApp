@@ -126,54 +126,46 @@
         </div>
 
         <div id="zbe-view" class="view-section">
-            <div class="flex items-center mb-6">
-                <button onclick="navigateTo('home')" class="mr-4 p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50 transition shadow-sm border border-gray-200">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                </button>
-                <h2 class="text-2xl font-bold">Zona de Bajas Emisiones (ZBE)</h2>
-            </div>
+    <div class="flex items-center mb-6">
+        <button onclick="navigateTo('home')" class="mr-4 p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50 transition shadow-sm border border-gray-200">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        </button>
+        <h2 class="text-2xl font-bold">Zona de Bajas Emisiones (ZBE)</h2>
+    </div>
 
-            <div class="bg-white p-2 rounded-3xl shadow-lg mb-6 border border-gray-100 overflow-hidden">
-                <div id="zbe-map-container" onclick="openZbeModal()" class="w-full h-[500px] bg-gray-50 rounded-2xl relative overflow-hidden cursor-pointer group">
-                    <img id="zbe-map-img" src="imagenes/zbeMapa.webp" onerror="this.src='https://via.placeholder.com/800x600?text=Mapa+ZBE+(Falta+Imagen)'" alt="Plano ZBE" class="w-full h-full object-contain pointer-events-none">
-                    
-                    <div class="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-xs backdrop-blur-sm pointer-events-none flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
-                        Toca para ampliar
-                    </div>
-                </div>
+    <div class="bg-white p-2 rounded-3xl shadow-lg mb-6 border border-gray-100 overflow-hidden">
+        <div id="zbe-map-container" onclick="openZbeModal()" class="w-full h-[300px] md:h-[500px] bg-gray-50 rounded-2xl relative overflow-hidden cursor-pointer group">
+            <img id="zbe-map-img" src="imagenes/zbeMapa.webp" onerror="this.src='https://via.placeholder.com/800x600?text=Mapa+ZBE'" alt="Plano ZBE Vista Previa" class="w-full h-full object-contain pointer-events-none">
+            
+            <div class="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-xs backdrop-blur-sm pointer-events-none flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                Toca para ampliar
             </div>
+        </div>
+    </div>
 
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="bg-white rounded-3xl shadow-lg p-6 border-l-4 border-blue-500">
-                    <h3 class="text-lg font-bold mb-4">📍 Calles de Acceso / Límite</h3>
-                    <ul class="text-sm space-y-3 text-gray-600 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
-                        <li><span class="normativa-title text-blue-600">ZONA ESTE:</span>Camino del Sacromonte (Abadía incluida). Cruce Restaurante El Caldero.</li>
-                        <li><span class="normativa-title text-blue-600">ZONA CARRETERA DE ALFACAR:</span>Coincide con perímetro urbano. Ciudad Deportiva <strong>INCLUIDA</strong>.</li>
-                        <li><span class="normativa-title text-blue-600">ZONA NORTE:</span>Calles Pegaso y Merced Alta <strong>NO INCLUIDAS</strong>.</li>
-                        <li><span class="normativa-title text-blue-600">ZONA NOROESTE:</span>Límite en Avd. Blas de Otero, C/ Lepanto, C/ Racimos.</li>
-                        <li><span class="normativa-title text-blue-600">ZONA OESTE:</span>Borde Parque Alquerías, vía servicio autovía. Camino de Cañaveral <strong>INCLUIDO</strong>.</li>
-                        <li><span class="normativa-title text-blue-600">ZONA SUROESTE:</span>Ctra. Vegas del Genil hasta cruce con Río Monachil/Genil.</li>
-                        <li><span class="normativa-title text-blue-600">ZONA SUR:</span>Avd. Innovación <strong>INCLUIDA</strong>. Excluidas: Avd. Jesús Candel y accesos.</li>
-                        <li><span class="normativa-title text-blue-600">ZONA SURESTE:</span>Acceso a Alhambra (Avd. Santa María) y Cementerio <strong>LIBRES</strong>.</li>
-                        <li><span class="normativa-title text-red-500">VÍAS EXCLUIDAS (LIBRES):</span>Circunvalación (GR-30), Ronda Sur (A-395), Merced Alta.</li>
-                    </ul>
-                </div>
-                <div class="bg-white rounded-3xl shadow-lg p-6 border-l-4 border-green-500">
-                    <h3 class="text-lg font-bold mb-4">📋 Normativa</h3>
-                    <div class="space-y-4 text-sm">
-                        <div class="bg-green-50 p-4 rounded-xl border border-green-100">
-                            <p class="font-bold text-green-800 mb-1">✅ Vehículos Permitidos</p>
-                            <p class="text-green-700">Etiqueta <strong>C, B, ECO y CERO</strong>. Vehículos empadronados en Granada (IVTM).</p>
-                        </div>
-                        <div class="bg-red-50 p-4 rounded-xl border border-red-100">
-                            <p class="font-bold text-red-800 mb-1">🚫 Restricciones</p>
-                            <p class="text-red-700">Vehículos <strong>sin etiqueta</strong> no residentes prohibidos en horario laboral.</p>
-                        </div>
-                    </div>
+    <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-3xl shadow-lg p-6 border-l-4 border-blue-500">
+            <h3 class="text-lg font-bold mb-4">📍 Calles de Acceso / Límite</h3>
+            <ul class="text-sm space-y-3 text-gray-600 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                <li><span class="normativa-title text-blue-600">ZONA ESTE:</span>Camino del Sacromonte (Abadía incluida). Cruce Restaurante El Caldero.</li>
+                <li><span class="normativa-title text-blue-600">ZONA NORTE:</span>Calles Pegaso y Merced Alta <strong>NO INCLUIDAS</strong>.</li>
+                <li><span class="normativa-title text-blue-600">ZONA OESTE:</span>Borde Parque Alquerías, vía servicio autovía.</li>
+                <li><span class="normativa-title text-blue-600">ZONA SUR:</span>Avd. Innovación <strong>INCLUIDA</strong>.</li>
+                <li><span class="normativa-title text-red-500">VÍAS EXCLUIDAS:</span>Circunvalación (GR-30), Ronda Sur.</li>
+            </ul>
+        </div>
+        <div class="bg-white rounded-3xl shadow-lg p-6 border-l-4 border-green-500">
+            <h3 class="text-lg font-bold mb-4">📋 Normativa</h3>
+            <div class="space-y-4 text-sm">
+                <div class="bg-green-50 p-4 rounded-xl border border-green-100">
+                    <p class="font-bold text-green-800 mb-1">✅ Vehículos Permitidos</p>
+                    <p class="text-green-700">Etiqueta <strong>C, B, ECO y CERO</strong>. Residentes.</p>
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
         <div id="ora-view" class="view-section">
             <div class="flex items-center mb-6">
