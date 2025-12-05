@@ -384,31 +384,38 @@
         const toggleButton = document.getElementById('theme-toggle');
         const body = document.body;
 
-        // 1. Cargar preferencia guardada
-        if (localStorage.getItem('theme') === 'dark') {
-            body.classList.add('dark-mode');
-            toggleButton.innerHTML = '☀️';
-            toggleButton.style.backgroundColor = '#333';
-            toggleButton.style.color = '#fff';
+        // Función unificada para aplicar el tema
+        function setTheme(isDark) {
+            if (isDark) {
+                body.classList.add('dark-mode');
+                toggleButton.innerHTML = '☀️'; // Icono Sol
+                toggleButton.style.backgroundColor = '#333';
+                toggleButton.style.color = '#fff';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-mode');
+                toggleButton.innerHTML = '🌙'; // Icono Luna
+                toggleButton.style.backgroundColor = '#fff';
+                toggleButton.style.color = '#333';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // 1. Cargar preferencia al iniciar
+        // Comprueba localStorage o preferencia del sistema si es la primera vez
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+            setTheme(true);
         } else {
-            toggleButton.innerHTML = '🌙';
+            setTheme(false);
         }
 
         // 2. Evento Click
         toggleButton.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-
-            if (body.classList.contains('dark-mode')) {
-                toggleButton.innerHTML = '☀️';
-                localStorage.setItem('theme', 'dark');
-                toggleButton.style.backgroundColor = '#333';
-                toggleButton.style.color = '#fff';
-            } else {
-                toggleButton.innerHTML = '🌙';
-                localStorage.setItem('theme', 'light');
-                toggleButton.style.backgroundColor = '#fff';
-                toggleButton.style.color = '#333';
-            }
+            const isCurrentlyDark = body.classList.contains('dark-mode');
+            setTheme(!isCurrentlyDark); // Invertir estado
         });
     </script>
 
