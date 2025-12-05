@@ -237,12 +237,14 @@ function renderFavorites(type) {
     favs.forEach(fav => {
         const btn = document.createElement('div');
         // Estilos del chip de favorito
-        btn.className = `cursor-pointer text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-2 transition-all shadow-sm border border-gray-200 
+        // AÑADIDO: 'max-w-full' para asegurar que el botón nunca sea más ancho que su contenedor padre
+        btn.className = `cursor-pointer text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-2 transition-all shadow-sm border border-gray-200 max-w-full
             ${type === 'bus' 
                 ? 'bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800' 
                 : 'bg-green-50 text-green-700 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800'}`;
         
-        btn.innerHTML = `<span>★ ${fav.name}</span>`; // Nombre corto
+        // MODIFICADO: Añadido 'truncate' al span para cortar el texto con "..." si es muy largo
+        btn.innerHTML = `<span class="truncate">★ ${fav.name}</span>`; 
         
         // Al hacer click, ejecutamos la búsqueda
         btn.onclick = () => {
