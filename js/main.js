@@ -20338,7 +20338,7 @@ function getContrastColor(hex) {
 
 function bindData(data, type) {
     const markers = [];
-    data.forEach((s) => {
+    data.forEach((s, index) => { // Usamos el índice para generar un ID único para los popups
         let contentHtml = ``;
         let buttonHtml = '';
         let lineasHtml = '';
@@ -20360,14 +20360,21 @@ function bindData(data, type) {
                 const stopCode = s.stop_code;
                 const stopCodeDisplay = stopCode ? `<p class="stop-code text-sm text-gray-500">Cód: <b>${stopCode}</b></p>` : '';
                 
-                // Redirecciona y ejecuta la búsqueda + Scroll a la zona de búsqueda
+                // Acción para redireccionar y buscar
                 const buttonAction = `
+                    // 1. Cerrar popup (se hace antes de la redirección)
                     mapTransporte.closePopup();
-                    const stopCodeInput = document.getElementById('stop-code'); 
-                    stopCodeInput.value = '${stopCode}'; 
+                    
+                    // 2. Navegar inmediatamente
                     navigateTo('transporte'); 
-                    // Asegurar que el scroll se ejecuta después de la navegación
-                    setTimeout(() => { searchStop(); scrollToElement('.grid.md:grid-cols-2.gap-6'); }, 100); 
+                    
+                    // 3. Esperar un poco para que el DOM se actualice y ejecutar la búsqueda/scroll
+                    setTimeout(() => { 
+                        const stopCodeInput = document.getElementById('stop-code'); 
+                        stopCodeInput.value = '${stopCode}'; 
+                        searchStop(); 
+                        scrollToElement('.grid.md:grid-cols-2.gap-6'); 
+                    }, 100); 
                 `;
                 
                 buttonHtml = `<button onclick="${buttonAction}" class="btn-ver-tiempos btn-bus">Ver Tiempos ${SVG_ICONS.lupa}</button>`;
@@ -20385,7 +20392,10 @@ function bindData(data, type) {
             
             // Acción para rellenar el select y buscar + Scroll a la zona de búsqueda
             const buttonAction = `
+                // 1. Cerrar popup
                 mapTransporte.closePopup();
+
+                // 2. Buscar opción y seleccionar
                 const selectMetro = document.getElementById('metro-stop-select'); 
                 const options = Array.from(selectMetro.options);
                 const targetOption = options.find(opt => opt.text === '${stopName}');
@@ -20397,9 +20407,14 @@ function bindData(data, type) {
                     return;
                 }
                 
+                // 3. Navegar inmediatamente
                 navigateTo('transporte'); 
-                // Asegurar que el scroll se ejecuta después de la navegación
-                setTimeout(() => { searchMetroStop(); scrollToElement('.grid.md:grid-cols-2.gap-6'); }, 100); 
+
+                // 4. Esperar un poco y ejecutar la búsqueda/scroll
+                setTimeout(() => { 
+                    searchMetroStop(); 
+                    scrollToElement('.grid.md:grid-cols-2.gap-6'); 
+                }, 100); 
             `;
             
             buttonHtml = `<button onclick="${buttonAction}" class="btn-ver-tiempos btn-metro mt-2">Ver Tiempos ${SVG_ICONS.lupa}</button>`;
