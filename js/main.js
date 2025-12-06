@@ -20362,9 +20362,11 @@ function bindData(data, type) {
                 
                 // Redirecciona y ejecuta la búsqueda + Scroll a la zona de búsqueda
                 const buttonAction = `
+                    mapTransporte.closePopup();
                     const stopCodeInput = document.getElementById('stop-code'); 
                     stopCodeInput.value = '${stopCode}'; 
                     navigateTo('transporte'); 
+                    // Asegurar que el scroll se ejecuta después de la navegación
                     setTimeout(() => { searchStop(); scrollToElement('.grid.md:grid-cols-2.gap-6'); }, 100); 
                 `;
                 
@@ -20383,6 +20385,7 @@ function bindData(data, type) {
             
             // Acción para rellenar el select y buscar + Scroll a la zona de búsqueda
             const buttonAction = `
+                mapTransporte.closePopup();
                 const selectMetro = document.getElementById('metro-stop-select'); 
                 const options = Array.from(selectMetro.options);
                 const targetOption = options.find(opt => opt.text === '${stopName}');
@@ -20395,6 +20398,7 @@ function bindData(data, type) {
                 }
                 
                 navigateTo('transporte'); 
+                // Asegurar que el scroll se ejecuta después de la navegación
                 setTimeout(() => { searchMetroStop(); scrollToElement('.grid.md:grid-cols-2.gap-6'); }, 100); 
             `;
             
