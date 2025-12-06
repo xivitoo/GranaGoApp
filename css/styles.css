@@ -205,6 +205,35 @@ body.dark-mode .leaflet-popup-content b {
     color: var(--dark-blue) !important;
 }
 
+/* Ocultar ID/Código en el popup del mapa (solo se verán si se fuerza su inclusión) */
+.leaflet-popup-content .stop-code,
+.leaflet-popup-content .stop-id {
+    display: none !important;
+}
+
+/* Estilo para los botones en el popup */
+.leaflet-popup-content .btn-ver-tiempos {
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 9999px; /* rounded-full */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    margin-top: 8px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+.leaflet-popup-content .btn-bus {
+    background-color: #ef4444; /* Rojo - Red-500 */
+    color: white;
+}
+.leaflet-popup-content .btn-metro {
+    background-color: #10b981; /* Verde - Emerald-500 */
+    color: white;
+}
+.leaflet-popup-content .btn-bus:hover { background-color: #dc2626; } /* Red-600 */
+.leaflet-popup-content .btn-metro:hover { background-color: #059669; } /* Emerald-600 */
+
 /* =========================================
    5. MODAL ZBE (Pantalla Completa)
    ========================================= */
@@ -255,4 +284,74 @@ body.dark-mode #zbe-modal {
 /* La imagen del mapa NO debe invertirse en modo oscuro */
 body.dark-mode #zbe-modal img {
     filter: none !important;
+}
+
+/* =========================================
+   6. ESTILOS ESPECÍFICOS DEL MAPA TRANSPORTE
+   ========================================= */
+
+/* Estilos de los marcadores SVG customizados */
+.pin-icon-custom {
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  padding: 6px; /* Para centrar el SVG interno */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+.pin-icon-custom svg {
+    height: 100%;
+    width: 100%;
+    color: white !important; /* El path del SVG ya tiene color, esto es solo por si acaso */
+}
+
+/* Aplicación de colores base a los contenedores de iconos */
+.pin-metro { background-color: #27ae60; } /* Verde - Metro */
+.pin-urbano { background-color: #e74c3c; } /* Rojo - Bus Urbano */
+.pin-inter { background-color: #3498db; } /* Azul - Bus Interurbano (Color del botón Interurbano) */
+
+/* Adaptación Dark Mode para marcadores */
+body.dark-mode .pin-icon-custom {
+    border-color: #1e1e1e; /* Color de fondo de la tarjeta en DM */
+}
+/* Asegurar que los iconos SVG internos de los botones usen el color actual del botón */
+.controls-transporte .icon-transport {
+    fill: currentColor;
+}
+body.dark-mode .controls-transporte .icon-transport {
+    fill: currentColor !important;
+}
+
+
+/* Estilos para los botones de control de capa */
+.btn-urbano.active-layer { background: #e74c3c; color: white; }
+.btn-inter.active-layer { background: #3498db; color: white; }
+.btn-metro.active-layer { background: #27ae60; color: white; }
+.inactive-layer { 
+    opacity: 0.6; 
+    background: #e5e7eb;
+    color: #6b7280;
+    box-shadow: none !important;
+}
+.inactive-layer:hover {
+    opacity: 0.8;
+}
+.inactive-layer:active {
+    opacity: 1;
+}
+
+body.dark-mode .inactive-layer {
+    background: #374151 !important;
+    color: #d1d5db !important;
+}
+
+/* Estilo para las líneas de ruta en el popup */
+.leaflet-popup-content span[style*="background-color"] {
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Borde claro para líneas oscuras */
+}
+body.dark-mode .leaflet-popup-content span[style*="background-color"] {
+    border: 1px solid rgba(0, 0, 0, 0.2); /* Borde oscuro para líneas claras */
 }
