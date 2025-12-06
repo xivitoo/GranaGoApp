@@ -1,35 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap");
 
 /* =========================================
    1. VARIABLES Y TEMA (Configuración Central)
    ========================================= */
 :root {
-    /* --- MODO CLARO (Default) --- */
-    --bg-body: #f7f9fb;
-    --text-main: #1f2937; /* gray-800 */
-    --font-main: 'Inter', sans-serif;
-    
-    /* Scrollbar */
-    --scroll-track: transparent;
-    --scroll-thumb: #cbd5e1;
+  /* --- MODO CLARO (Default) --- */
+  --bg-body: #f7f9fb;
+  --text-main: #1f2937; /* gray-800 */
+  --font-main: "Inter", sans-serif;
 
-    /* --- PALETA MODO OSCURO (Valores) --- */
-    --dark-bg-body: #121212;
-    --dark-bg-card: #1e1e1e;
-    --dark-bg-input: #2d2d2d;
-    --dark-bg-soft: #262626;
-    
-    --dark-text-main: #e5e7eb;
-    --dark-text-muted: #d1d5db;
-    
-    --dark-border: #374151;
-    
-    /* Colores Semánticos Oscuros (Aclarados para contraste) */
-    --dark-blue: #60a5fa;
-    --dark-red: #f87171;
-    --dark-green: #4ade80;
-    --dark-orange: #fbbf24;
-    --dark-purple: #c084fc;
+  /* Scrollbar */
+  --scroll-track: transparent;
+  --scroll-thumb: #cbd5e1;
+
+  /* --- PALETA MODO OSCURO (Valores) --- */
+  --dark-bg-body: #121212;
+  --dark-bg-card: #1e1e1e;
+  --dark-bg-input: #2d2d2d;
+  --dark-bg-soft: #262626;
+
+  --dark-text-main: #e5e7eb;
+  --dark-text-muted: #d1d5db;
+
+  --dark-border: #374151;
+
+  /* Colores Semánticos Oscuros (Aclarados para contraste) */
+  --dark-blue: #60a5fa;
+  --dark-red: #f87171;
+  --dark-green: #4ade80;
+  --dark-orange: #fbbf24;
+  --dark-purple: #c084fc;
 }
 
 /* =========================================
@@ -37,48 +37,53 @@
    ========================================= */
 
 body {
-    font-family: var(--font-main);
-    background-color: var(--bg-body);
-    color: var(--text-main);
-    overflow-x: hidden;
-    transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: var(--font-main);
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* UI: Tarjetas de Servicio (Efecto Hover) */
 .service-card {
-    transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
 }
 .service-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 /* Animaciones de Entrada (Fade In Up) */
 .view-section {
-    display: none;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  display: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 .view-section.active {
-    display: block;
-    opacity: 1;
-    transform: translateY(0);
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Scrollbar Personalizado */
-.custom-scrollbar::-webkit-scrollbar { width: 6px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: var(--scroll-track); }
-.custom-scrollbar::-webkit-scrollbar-thumb { 
-    background-color: var(--scroll-thumb); 
-    border-radius: 3px; 
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--scroll-track);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--scroll-thumb);
+  border-radius: 3px;
 }
 
 /* Utilidad para textos legales/normativa */
 .normativa-title {
-    font-weight: 700;
-    display: block;
-    margin-bottom: 0.1rem;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.1rem;
 }
 
 /* =========================================
@@ -92,88 +97,130 @@ body {
 */
 
 body.dark-mode {
-    background-color: var(--dark-bg-body) !important;
-    color: var(--dark-text-main) !important;
+  background-color: var(--dark-bg-body) !important;
+  color: var(--dark-text-main) !important;
 }
 
 /* Fondo decorativo (Imagen de fondo) */
 body.dark-mode .fixed.inset-0.-z-10 {
-    opacity: 0.15 !important;
-    filter: invert(1) grayscale(100%) brightness(0.7);
+  opacity: 0.15 !important;
+  filter: invert(1) grayscale(100%) brightness(0.7);
 }
 
 /* Contenedores (Cards, Modales, Secciones) */
 body.dark-mode .bg-white {
-    background-color: var(--dark-bg-card) !important;
-    border-color: var(--dark-border) !important;
-    color: var(--dark-text-main) !important;
+  background-color: var(--dark-bg-card) !important;
+  border-color: var(--dark-border) !important;
+  color: var(--dark-text-main) !important;
 }
 
 /* Fondos Suaves (Listas, Headers de tarjetas) */
 body.dark-mode .bg-gray-50,
 body.dark-mode .bg-gray-100 {
-    background-color: var(--dark-bg-soft) !important;
-    border-color: #404040 !important;
-    color: var(--dark-text-muted) !important;
+  background-color: var(--dark-bg-soft) !important;
+  border-color: #404040 !important;
+  color: var(--dark-text-muted) !important;
 }
 
 /* Tarjetas Home específicas */
 body.dark-mode .service-card {
-    background-color: #2d2d2d !important;
-    border-color: var(--dark-border) !important;
+  background-color: #2d2d2d !important;
+  border-color: var(--dark-border) !important;
 }
 
 /* --- TEXTOS --- */
 /* Convertir grises oscuros a claros */
 body.dark-mode .text-gray-400,
 body.dark-mode .text-gray-500,
-body.dark-mode .text-gray-600, 
-body.dark-mode .text-gray-700, 
-body.dark-mode .text-gray-800, 
+body.dark-mode .text-gray-600,
+body.dark-mode .text-gray-700,
+body.dark-mode .text-gray-800,
 body.dark-mode .text-gray-900 {
-    color: var(--dark-text-muted) !important;
+  color: var(--dark-text-muted) !important;
 }
 
 /* Títulos y Negritas */
 body.dark-mode .font-bold,
-body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4 {
-    color: #ffffff !important;
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4 {
+  color: #ffffff !important;
 }
 
 /* Excepción: Textos que DEBEN ser negros (ej: Bus U1 fondo amarillo) */
 body.dark-mode .text-black {
-    color: #000000 !important;
+  color: #000000 !important;
 }
 
 /* --- COLORES SEMÁNTICOS (Adaptación a Dark Mode) --- */
-body.dark-mode .text-blue-600, body.dark-mode .text-blue-700, body.dark-mode .text-blue-800 { color: var(--dark-blue) !important; }
-body.dark-mode .text-red-600, body.dark-mode .text-red-700, body.dark-mode .text-red-800 { color: var(--dark-red) !important; }
-body.dark-mode .text-green-600, body.dark-mode .text-green-800 { color: var(--dark-green) !important; }
-body.dark-mode .text-orange-800, body.dark-mode .text-orange-900 { color: var(--dark-orange) !important; }
-body.dark-mode .text-purple-600 { color: var(--dark-purple) !important; }
+body.dark-mode .text-blue-600,
+body.dark-mode .text-blue-700,
+body.dark-mode .text-blue-800 {
+  color: var(--dark-blue) !important;
+}
+body.dark-mode .text-red-600,
+body.dark-mode .text-red-700,
+body.dark-mode .text-red-800 {
+  color: var(--dark-red) !important;
+}
+body.dark-mode .text-green-600,
+body.dark-mode .text-green-800 {
+  color: var(--dark-green) !important;
+}
+body.dark-mode .text-orange-800,
+body.dark-mode .text-orange-900 {
+  color: var(--dark-orange) !important;
+}
+body.dark-mode .text-purple-600 {
+  color: var(--dark-purple) !important;
+}
 
 /* Cajas de Alerta (Fondos tintados con transparencia) */
-body.dark-mode [class*="bg-blue-50"], body.dark-mode [class*="bg-blue-100"] { background-color: rgba(59, 130, 246, 0.15) !important; border-color: rgba(59, 130, 246, 0.3) !important; }
-body.dark-mode [class*="bg-red-50"], body.dark-mode [class*="bg-red-100"] { background-color: rgba(239, 68, 68, 0.15) !important; border-color: rgba(239, 68, 68, 0.3) !important; }
-body.dark-mode [class*="bg-green-50"], body.dark-mode [class*="bg-green-100"] { background-color: rgba(34, 197, 94, 0.15) !important; border-color: rgba(34, 197, 94, 0.3) !important; }
-body.dark-mode [class*="bg-orange-50"], body.dark-mode [class*="bg-orange-100"] { background-color: rgba(249, 115, 22, 0.15) !important; border-color: rgba(249, 115, 22, 0.3) !important; }
-body.dark-mode [class*="bg-purple-50"] { background-color: rgba(168, 85, 247, 0.15) !important; border-color: rgba(168, 85, 247, 0.3) !important; }
+body.dark-mode [class*="bg-blue-50"],
+body.dark-mode [class*="bg-blue-100"] {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+body.dark-mode [class*="bg-red-50"],
+body.dark-mode [class*="bg-red-100"] {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+body.dark-mode [class*="bg-green-50"],
+body.dark-mode [class*="bg-green-100"] {
+  background-color: rgba(34, 197, 94, 0.15) !important;
+  border-color: rgba(34, 197, 94, 0.3) !important;
+}
+body.dark-mode [class*="bg-orange-50"],
+body.dark-mode [class*="bg-orange-100"] {
+  background-color: rgba(249, 115, 22, 0.15) !important;
+  border-color: rgba(249, 115, 22, 0.3) !important;
+}
+body.dark-mode [class*="bg-purple-50"] {
+  background-color: rgba(168, 85, 247, 0.15) !important;
+  border-color: rgba(168, 85, 247, 0.3) !important;
+}
 
 /* Inputs y Formularios */
-body.dark-mode input, 
+body.dark-mode input,
 body.dark-mode select {
-    background-color: var(--dark-bg-input) !important;
-    color: #ffffff !important;
-    border: 1px solid var(--dark-border) !important;
+  background-color: var(--dark-bg-input) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--dark-border) !important;
 }
-body.dark-mode input::placeholder { color: #9ca3af !important; }
+body.dark-mode input::placeholder {
+  color: #9ca3af !important;
+}
 
 /* Iconos SVG genéricos */
-body.dark-mode svg { color: currentColor; }
+body.dark-mode svg {
+  color: currentColor;
+}
 
 /* Scrollbar en modo oscuro */
 body.dark-mode .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #4b5563;
+  background-color: #4b5563;
 }
 
 /* =========================================
@@ -185,105 +232,109 @@ body.dark-mode .leaflet-layer,
 body.dark-mode .leaflet-control-zoom-in,
 body.dark-mode .leaflet-control-zoom-out,
 body.dark-mode .leaflet-control-attribution {
-    filter: invert(100%) hue-rotate(180deg) brightness(0.95) contrast(0.9);
+  filter: invert(100%) hue-rotate(180deg) brightness(0.95) contrast(0.9);
 }
 
 /* Evita que los marcadores y popups se inviertan (se verían extraños) */
 body.dark-mode .leaflet-marker-icon,
 body.dark-mode .leaflet-popup-content-wrapper,
 body.dark-mode .leaflet-popup-tip {
-    filter: none !important; 
+  filter: none !important;
 }
 
 /* Estilo oscuro para los popups del mapa */
 body.dark-mode .leaflet-popup-content-wrapper,
 body.dark-mode .leaflet-popup-tip {
-    background-color: var(--dark-bg-input) !important;
-    color: var(--dark-text-main) !important;
+  background-color: var(--dark-bg-input) !important;
+  color: var(--dark-text-main) !important;
 }
 body.dark-mode .leaflet-popup-content b {
-    color: var(--dark-blue) !important;
+  color: var(--dark-blue) !important;
 }
 
 /* Ocultar ID/Código en el popup del mapa (solo se verán si se fuerza su inclusión) */
 .leaflet-popup-content .stop-code,
 .leaflet-popup-content .stop-id {
-    display: none !important;
+  display: none !important;
 }
 
 /* Estilo para los botones en el popup */
 .leaflet-popup-content .btn-ver-tiempos {
-    font-weight: bold;
-    padding: 6px 12px;
-    border-radius: 9999px; /* rounded-full */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    margin-top: 8px;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 9999px; /* rounded-full */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  margin-top: 8px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 .leaflet-popup-content .btn-bus {
-    background-color: #ef4444; /* Rojo - Red-500 */
-    color: white;
+  background-color: #ef4444; /* Rojo - Red-500 */
+  color: white;
 }
 .leaflet-popup-content .btn-metro {
-    background-color: #10b981; /* Verde - Emerald-500 */
-    color: white;
+  background-color: #10b981; /* Verde - Emerald-500 */
+  color: white;
 }
-.leaflet-popup-content .btn-bus:hover { background-color: #dc2626; } /* Red-600 */
-.leaflet-popup-content .btn-metro:hover { background-color: #059669; } /* Emerald-600 */
+.leaflet-popup-content .btn-bus:hover {
+  background-color: #dc2626;
+} /* Red-600 */
+.leaflet-popup-content .btn-metro:hover {
+  background-color: #059669;
+} /* Emerald-600 */
 
 /* =========================================
    5. MODAL ZBE (Pantalla Completa)
    ========================================= */
 
 #zbe-modal {
-    display: flex !important; /* Centrado Flexbox */
-    align-items: center;
-    justify-content: center;
-    perspective: 1000px;
-    overflow: hidden;
-    backdrop-filter: blur(5px);
-    /* Asegurar visibilidad correcta en modo claro y oscuro */
-    background-color: rgba(0, 0, 0, 0.9);
-    transition: opacity 0.3s ease;
+  display: flex !important; /* Centrado Flexbox */
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  /* Asegurar visibilidad correcta en modo claro y oscuro */
+  background-color: rgba(0, 0, 0, 0.9);
+  transition: opacity 0.3s ease;
 }
 
 /* Corrección Dark Mode para el Modal: Forzar opacidad total y sin filtros */
 body.dark-mode #zbe-modal {
-    background-color: rgba(0, 0, 0, 0.95) !important;
-    opacity: 1 !important;
-    filter: none !important;
+  background-color: rgba(0, 0, 0, 0.95) !important;
+  opacity: 1 !important;
+  filter: none !important;
 }
 
 /* Estado oculto */
 #zbe-modal.hidden {
-    display: none !important;
+  display: none !important;
 }
 
 /* Imagen dentro del modal */
 #zbe-modal-img {
-    transform-origin: center center !important;
-    max-width: none; /* Permite zoom infinito */
-    max-height: none;
-    cursor: grab;
-    
-    /* Optimización de rendimiento (GPU) */
-    transform: translateZ(0); 
-    backface-visibility: hidden;
-    
-    /* Sin transición para drag instantáneo */
-    transition: none; 
+  transform-origin: center center !important;
+  max-width: none; /* Permite zoom infinito */
+  max-height: none;
+  cursor: grab;
+
+  /* Optimización de rendimiento (GPU) */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+
+  /* Sin transición para drag instantáneo */
+  transition: none;
 }
 
 #zbe-modal-img:active {
-    cursor: grabbing;
+  cursor: grabbing;
 }
 
 /* La imagen del mapa NO debe invertirse en modo oscuro */
 body.dark-mode #zbe-modal img {
-    filter: none !important;
+  filter: none !important;
 }
 
 /* =========================================
@@ -303,55 +354,69 @@ body.dark-mode #zbe-modal img {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
 }
 .pin-icon-custom svg {
-    height: 100%;
-    width: 100%;
-    color: white !important; /* El path del SVG ya tiene color, esto es solo por si acaso */
+  height: 100%;
+  width: 100%;
+  color: white !important; /* El path del SVG ya tiene color, esto es solo por si acaso */
 }
 
 /* Aplicación de colores base a los contenedores de iconos */
-.pin-metro { background-color: #27ae60; } /* Verde - Metro */
-.pin-urbano { background-color: #e74c3c; } /* Rojo - Bus Urbano */
-.pin-inter { background-color: #3498db; } /* Azul - Bus Interurbano (Color del botón Interurbano) */
+.pin-metro {
+  background-color: #27ae60;
+} /* Verde - Metro */
+.pin-urbano {
+  background-color: #e74c3c;
+} /* Rojo - Bus Urbano */
+.pin-inter {
+  background-color: #3498db;
+} /* Azul - Bus Interurbano (Color del botón Interurbano) */
 
 /* Adaptación Dark Mode para marcadores */
 body.dark-mode .pin-icon-custom {
-    border-color: #1e1e1e; /* Color de fondo de la tarjeta en DM */
+  border-color: #1e1e1e; /* Color de fondo de la tarjeta en DM */
 }
 /* Asegurar que los iconos SVG internos de los botones usen el color actual del botón */
 .controls-transporte .icon-transport {
-    fill: currentColor;
+  fill: currentColor;
 }
 body.dark-mode .controls-transporte .icon-transport {
-    fill: currentColor !important;
+  fill: currentColor !important;
 }
-
 
 /* Estilos para los botones de control de capa */
-.btn-urbano.active-layer { background: #e74c3c; color: white; }
-.btn-inter.active-layer { background: #3498db; color: white; }
-.btn-metro.active-layer { background: #27ae60; color: white; }
-.inactive-layer { 
-    opacity: 0.6; 
-    background: #e5e7eb;
-    color: #6b7280;
-    box-shadow: none !important;
+.btn-urbano.active-layer {
+  background: #e74c3c;
+  color: white;
+}
+.btn-inter.active-layer {
+  background: #3498db;
+  color: white;
+}
+.btn-metro.active-layer {
+  background: #27ae60;
+  color: white;
+}
+.inactive-layer {
+  opacity: 0.6;
+  background: #e5e7eb;
+  color: #6b7280;
+  box-shadow: none !important;
 }
 .inactive-layer:hover {
-    opacity: 0.8;
+  opacity: 0.8;
 }
 .inactive-layer:active {
-    opacity: 1;
+  opacity: 1;
 }
 
 body.dark-mode .inactive-layer {
-    background: #374151 !important;
-    color: #d1d5db !important;
+  background: #374151 !important;
+  color: #d1d5db !important;
 }
 
 /* Estilo para las líneas de ruta en el popup */
 .leaflet-popup-content span[style*="background-color"] {
-    border: 1px solid rgba(255, 255, 255, 0.2); /* Borde claro para líneas oscuras */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Borde claro para líneas oscuras */
 }
 body.dark-mode .leaflet-popup-content span[style*="background-color"] {
-    border: 1px solid rgba(0, 0, 0, 0.2); /* Borde oscuro para líneas claras */
+  border: 1px solid rgba(0, 0, 0, 0.2); /* Borde oscuro para líneas claras */
 }

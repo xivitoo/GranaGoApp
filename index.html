@@ -1,452 +1,959 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GranáGo</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css" />
 
-    <link rel="preload" as="image" href="imagenes/Fondo.webp">
-    <link rel="icon" type="image/x-icon" href="imagenes/Logo.ico">
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#000000">
-    <link rel="apple-touch-icon" href="imagenes/Logo192x192.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-</head>
+    <link rel="preload" as="image" href="imagenes/Fondo.webp" />
+    <link rel="icon" type="image/x-icon" href="imagenes/Logo.ico" />
+    <link rel="manifest" href="./manifest.json" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="apple-touch-icon" href="imagenes/Logo192x192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+  </head>
 
-<body class="min-h-screen flex flex-col text-gray-800">
-
-    <button id="theme-toggle" aria-label="Cambiar tema" 
-        class="fixed top-4 right-4 z-50 p-3 rounded-full bg-white text-gray-800 shadow-lg border border-gray-200 hover:scale-110 transition-transform duration-200 dark:bg-gray-800 dark:text-white">
-        🌙
+  <body class="min-h-screen flex flex-col text-gray-800">
+    <button
+      id="theme-toggle"
+      aria-label="Cambiar tema"
+      class="fixed top-4 right-4 z-50 p-3 rounded-full bg-white text-gray-800 shadow-lg border border-gray-200 hover:scale-110 transition-transform duration-200 dark:bg-gray-800 dark:text-white"
+    >
+      🌙
     </button>
 
-    <div class="fixed inset-0 bg-no-repeat bg-center bg-cover pointer-events-none opacity-15 -z-10" 
-         style="background-image: url('imagenes/Fondo.webp');">
+    <div
+      class="fixed inset-0 bg-no-repeat bg-center bg-cover pointer-events-none opacity-15 -z-10"
+      style="background-image: url('imagenes/Fondo.webp')"
+    ></div>
+
+    <div
+      id="app"
+      class="w-full p-4 sm:p-6 md:p-8 flex-grow max-w-7xl mx-auto z-10 relative"
+    >
+      <header class="mb-8 pt-2 text-center border-b border-gray-200 pb-4">
+        <a
+          href="#"
+          onclick="event.preventDefault(); navigateTo('home')"
+          class="inline-block transform hover:scale-105 transition duration-200"
+        >
+          <img
+            src="imagenes/Logo.webp"
+            onerror="this.src='https://via.placeholder.com/150?text=GranáGo'"
+            alt="GranáGo Logo"
+            class="h-16 w-auto object-contain"
+          />
+        </a>
+      </header>
+
+      <div id="home-view" class="view-section active">
+        <section>
+          <h2 class="text-xl font-semibold mb-6 text-center md:text-left">
+            Servicios Principales
+          </h2>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+            <div
+              onclick="navigateTo('transporte')"
+              class="service-card bg-white border border-gray-200 rounded-[1.25rem] cursor-pointer flex flex-col overflow-hidden shadow-lg group text-center"
+            >
+              <div class="h-32 w-full overflow-hidden">
+                <img
+                  src="imagenes/Transporte.webp"
+                  loading="lazy"
+                  onerror="this.src='https://via.placeholder.com/400x300?text=Bus+Metro'"
+                  class="h-full w-full object-cover group-hover:scale-110 transition duration-500"
+                />
+              </div>
+              <div class="p-4">
+                <p class="font-extrabold text-lg leading-tight">
+                  TRANSPORTE EN TIEMPO REAL
+                </p>
+                <p class="text-xs text-gray-500 mt-1">
+                  Autobuses urbanos y Metro.
+                </p>
+              </div>
+            </div>
+
+            <div
+              onclick="navigateTo('zbe')"
+              class="service-card bg-white border border-gray-200 rounded-[1.25rem] cursor-pointer flex flex-col overflow-hidden shadow-lg group text-center"
+            >
+              <div class="h-32 w-full overflow-hidden">
+                <img
+                  src="imagenes/ZBE.webp"
+                  loading="lazy"
+                  onerror="this.src='https://via.placeholder.com/400x300?text=ZBE+Granada'"
+                  class="h-full w-full object-cover group-hover:scale-110 transition duration-500"
+                />
+              </div>
+              <div class="p-4">
+                <p class="font-extrabold text-lg leading-tight">
+                  ZONA DE BAJAS EMISIONES
+                </p>
+                <p class="text-xs text-gray-500 mt-1">
+                  Plano, límites y normativa de la ZBE
+                </p>
+              </div>
+            </div>
+
+            <div
+              onclick="navigateTo('ora')"
+              class="service-card bg-white border border-gray-200 rounded-[1.25rem] cursor-pointer flex flex-col overflow-hidden shadow-lg group text-center"
+            >
+              <div class="h-32 w-full overflow-hidden">
+                <img
+                  src="imagenes/ORA.webp"
+                  loading="lazy"
+                  onerror="this.src='https://via.placeholder.com/400x300?text=ORA+Zona+Azul'"
+                  class="h-full w-full object-cover group-hover:scale-110 transition duration-500"
+                />
+              </div>
+              <div class="p-4">
+                <p class="font-extrabold text-lg leading-tight">PARKING ORA</p>
+                <p class="text-xs text-gray-500 mt-1">
+                  Zonas de Estacionamiento Limitado.
+                </p>
+              </div>
+            </div>
+
+            <div
+              onclick="navigateTo('cortes')"
+              class="service-card bg-white border border-gray-200 rounded-[1.25rem] cursor-pointer flex flex-col overflow-hidden shadow-lg group text-center"
+            >
+              <div class="h-32 w-full overflow-hidden">
+                <img
+                  src="imagenes/Eventos.webp"
+                  loading="lazy"
+                  onerror="this.src='https://via.placeholder.com/400x300?text=Obras+Trafico'"
+                  class="h-full w-full object-cover group-hover:scale-110 transition duration-500"
+                />
+              </div>
+              <div class="p-4">
+                <p class="font-extrabold text-lg leading-tight">
+                  CORTES Y EVENTOS
+                </p>
+                <p class="text-xs text-gray-500 mt-1">
+                  Mapa con cortes actualizados.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div id="transporte-view" class="view-section">
+        <div class="flex items-center mb-6">
+          <button
+            onclick="navigateTo('home')"
+            class="mr-4 p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50 transition shadow-sm border border-gray-200"
+          >
+            <svg
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+          </button>
+          <h2 class="text-2xl font-bold">Transporte Público</h2>
+        </div>
+
+        <div
+          id="map-transporte-container"
+          class="bg-white p-2 rounded-3xl shadow-lg mb-6 border border-gray-100 overflow-hidden relative"
+        >
+          <div
+            id="map-transporte"
+            class="w-full h-[400px] rounded-2xl z-0"
+          ></div>
+
+          <div
+            class="controls-transporte absolute top-4 left-1/2 transform -translate-x-1/2 z-10 p-2 rounded-xl bg-white bg-opacity-90 shadow-xl border border-gray-200 flex space-x-2"
+          >
+            <button
+              id="btnUrbano"
+              class="btn btn-urbano px-4 py-2 text-xs font-bold rounded-lg transition-colors duration-200 active-layer flex items-center"
+              onclick="toggleLayer('urbano')"
+            >
+              <svg
+                class="h-5 w-5 mr-1 icon-transport"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4S4 2.5 4 6v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm-9-11c0-.55.45-1 1-1h8c.55 0 1 .45 1 1v4H6V6z"
+                />
+              </svg>
+              Urbano
+            </button>
+
+            <button
+              id="btnInter"
+              class="btn btn-inter px-4 py-2 text-xs font-bold rounded-lg transition-colors duration-200 inactive-layer flex items-center"
+              onclick="toggleLayer('inter')"
+            >
+              <svg
+                class="h-5 w-5 mr-1 icon-transport"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4S4 2.5 4 6v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm-9-11c0-.55.45-1 1-1h8c.55 0 1 .45 1 1v4H6V6z"
+                />
+              </svg>
+              Interurbano
+            </button>
+
+            <button
+              id="btnMetro"
+              class="btn btn-metro px-4 py-2 text-xs font-bold rounded-lg transition-colors duration-200 inactive-layer flex items-center"
+              onclick="toggleLayer('metro')"
+            >
+              <svg
+                class="h-5 w-5 mr-1 icon-transport"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 2c-4 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2.23l2-2H14l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-3.58-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-7H6V6h5v4zm2 0V6h5v4h-5zm3.5 7c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"
+                />
+              </svg>
+              Metro
+            </button>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <section
+            class="bg-white p-6 rounded-3xl shadow-lg border-t-4 border-red-600"
+          >
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+              <span class="bg-red-100 p-2 rounded-lg mr-3">
+                <svg
+                  class="h-6 w-6 text-red-600"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4S4 2.5 4 6v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm-9-11c0-.55.45-1 1-1h8c.55 0 1 .45 1 1v4H6V6z"
+                  />
+                </svg>
+              </span>
+              Localiza tu Bus
+            </h2>
+            <div class="space-y-3">
+              <input
+                type="number"
+                id="stop-code"
+                placeholder="Ej: 1300 (Código Parada)"
+                class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none transition"
+                pattern="[0-9]*"
+              />
+              <div
+                id="bus-favorites"
+                class="flex flex-wrap gap-2 empty:hidden animate-fade-in"
+              ></div>
+              <button
+                onclick="searchStop()"
+                class="w-full bg-red-600 hover:bg-red-700 text-white p-3 rounded-xl font-bold transition shadow-md"
+              >
+                BUSCAR BUSES
+              </button>
+            </div>
+            <div id="bus-results" class="mt-4 space-y-3"></div>
+          </section>
+
+          <section
+            class="bg-white p-6 rounded-3xl shadow-lg border-t-4 border-green-600"
+          >
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+              <span class="bg-green-100 p-2 rounded-lg mr-3">
+                <svg
+                  class="h-6 w-6 text-green-600"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2c-4 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2.23l2-2H14l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-3.58-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-7H6V6h5v4zm2 0V6h5v4h-5zm3.5 7c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"
+                  />
+                </svg>
+              </span>
+              Localiza tu Metro
+            </h2>
+            <div class="space-y-3">
+              <select
+                id="metro-stop-select"
+                class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none bg-white"
+              >
+                <option value="">Cargando paradas...</option>
+              </select>
+              <div
+                id="metro-favorites"
+                class="flex flex-wrap gap-2 empty:hidden animate-fade-in"
+              ></div>
+              <button
+                onclick="searchMetroStop()"
+                class="w-full bg-green-600 hover:bg-green-700 text-white p-3 rounded-xl font-bold transition shadow-md"
+              >
+                BUSCAR METROS
+              </button>
+            </div>
+            <div id="metro-results" class="mt-4 space-y-3"></div>
+          </section>
+        </div>
+      </div>
+
+      <div id="zbe-view" class="view-section">
+        <div class="flex items-center mb-6">
+          <button
+            onclick="navigateTo('home')"
+            class="mr-4 p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50 transition shadow-sm border border-gray-200"
+          >
+            <svg
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+          </button>
+          <h2 class="text-2xl font-bold">Zona de Bajas Emisiones (ZBE)</h2>
+        </div>
+
+        <div
+          class="bg-white p-2 rounded-3xl shadow-lg mb-6 border border-gray-100 overflow-hidden"
+        >
+          <div
+            id="zbe-map-container"
+            onclick="openZbeModal()"
+            class="w-full h-[300px] md:h-[500px] bg-gray-50 rounded-2xl relative overflow-hidden cursor-pointer group"
+          >
+            <img
+              id="zbe-map-img"
+              src="imagenes/zbeMapa.webp"
+              onerror="this.src='https://via.placeholder.com/800x600?text=Mapa+ZBE'"
+              alt="Plano ZBE Vista Previa"
+              class="w-full h-full object-contain pointer-events-none"
+            />
+
+            <div
+              class="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-xs backdrop-blur-sm pointer-events-none flex items-center gap-2"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                ></path>
+              </svg>
+              Toca para ampliar
+            </div>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div
+            class="bg-white rounded-3xl shadow-lg p-6 border-l-4 border-blue-500"
+          >
+            <h3 class="text-lg font-bold mb-4 text-gray-800 dark:text-white">
+              📍 Límites ZBE (23.55 km²)
+            </h3>
+            <ul
+              class="text-sm space-y-3 text-gray-600 max-h-80 overflow-y-auto pr-2 custom-scrollbar"
+            >
+              <li>
+                <span class="normativa-title text-blue-600">ZONA ESTE:</span>
+                Camino del Sacromonte (Abadía incluida). Cruce Rte. El Caldero
+                (control accesos Ctra. Murcia/Fargue).
+              </li>
+
+              <li>
+                <span class="normativa-title text-blue-600"
+                  >ZONA NORTE / ALFACAR:</span
+                >
+                Ciudad Deportiva <strong>INCLUIDA</strong>. Calles Pegaso y
+                Merced Alta <strong>NO INCLUIDAS</strong>. Límite con Casería de
+                los Cipreses.
+              </li>
+
+              <li>
+                <span class="normativa-title text-blue-600"
+                  >ZONA NOROESTE:</span
+                >
+                Avd. Blas de Otero, Lepanto, Racimos, El Jau y borde Parque
+                Cronista Juan Burgos.
+              </li>
+
+              <li>
+                <span class="normativa-title text-blue-600">ZONA OESTE:</span>
+                Borde Parque Alquerías. Camino de Cañaveral, Parque F.G. Lorca y
+                C/ Eudoxia Pririz <strong>INCLUIDOS</strong>. <br /><em
+                  class="text-xs"
+                  >Accesos Parking:</em
+                >
+                María Moliner y Prof. Luis Molina Gómez (Abiertos).
+              </li>
+
+              <li>
+                <span class="normativa-title text-blue-600"
+                  >ZONA SUR / SUROESTE:</span
+                >
+                Avd. Innovación <strong>INCLUIDA</strong>. Límite con Río
+                Monachil. <br /><em class="text-xs"
+                  >No incluidas (Acceso Parking Los Cármenes):</em
+                >
+                Avd. Jesús Candel, Conocimiento, Torre Comares y Sultana.
+              </li>
+
+              <li>
+                <span class="normativa-title text-blue-600"
+                  >ZONA SURESTE / ALHAMBRA:</span
+                >
+                Término municipal incluido excepto Paseo de Cameros y Avd. Santa
+                María de la Alhambra.
+                <br /><strong>NO INCLUIDOS:</strong> Patronato de la Alhambra y
+                acceso al Cementerio.
+              </li>
+
+              <li>
+                <span class="normativa-title text-red-500"
+                  >VÍAS EXCLUIDAS (Rondas):</span
+                >
+                Circunvalación (GR-30), Ronda Sur (A-395) y Merced Alta
+                (A-4006).
+              </li>
+            </ul>
+          </div>
+
+          <div
+            class="bg-white rounded-3xl shadow-lg p-6 border-l-4 border-green-500"
+          >
+            <h3 class="text-lg font-bold mb-4">📋 Normativa</h3>
+            <div class="space-y-4 text-sm">
+              <div class="bg-green-50 p-4 rounded-xl border border-green-100">
+                <p class="font-bold text-green-800 mb-1">
+                  ✅ Vehículos Permitidos
+                </p>
+                <ul class="text-green-700 list-disc list-inside space-y-1">
+                  <li>
+                    Cualquier vehículo con etiqueta
+                    <strong>B, C, ECO y CERO</strong>.
+                  </li>
+                  <li>
+                    Vehículos con
+                    <strong>domicilio fiscal en Granada</strong> (Residentes),
+                    tengan o no etiqueta.
+                  </li>
+                </ul>
+              </div>
+
+              <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                <p class="font-bold text-red-800 mb-1">
+                  🚫 Vehículos Restringidos
+                </p>
+                <p class="text-red-700 mb-2">
+                  No pueden acceder los vehículos
+                  <strong>sin distintivo ambiental</strong> que
+                  <strong>NO</strong> tengan domicilio fiscal en Granada.
+                </p>
+                <p class="text-xs font-bold text-red-600 uppercase mb-1">
+                  Se consideran sin etiqueta:
+                </p>
+                <ul class="text-red-700 text-xs list-disc list-inside ml-1">
+                  <li>Gasolina anteriores a <strong>2001</strong>.</li>
+                  <li>Diésel anteriores a <strong>2006</strong>.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="ora-view" class="view-section">
+        <div class="flex items-center mb-6">
+          <button
+            onclick="navigateTo('home')"
+            class="mr-4 p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50 transition shadow-sm border border-gray-200"
+          >
+            <svg
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+          </button>
+          <h2 class="text-2xl font-bold">Estacionamiento Regulado (ORA)</h2>
+        </div>
+
+        <div class="flex justify-center mb-4">
+          <div class="bg-gray-100 p-1 rounded-xl flex space-x-1 shadow-inner">
+            <button
+              onclick="switchOraMap('vias')"
+              id="btn-map-vias"
+              class="px-6 py-2 rounded-lg text-sm font-bold transition-all shadow bg-white text-blue-600"
+            >
+              Mapa de Vías
+            </button>
+            <button
+              onclick="switchOraMap('parquimetros')"
+              id="btn-map-parq"
+              class="px-6 py-2 rounded-lg text-sm font-bold text-gray-500 hover:text-gray-700 transition-all"
+            >
+              Mapa de Parquímetros
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="bg-white p-2 rounded-3xl shadow-lg mb-6 border border-gray-100 overflow-hidden relative h-[500px]"
+        >
+          <div id="map-vias" class="w-full h-full block">
+            <iframe
+              src="https://www.google.com/maps/d/embed?mid=1CqNCPMeQZcKjz3jQmiJreTeBzSNl_EhZ&ehbc=2E312F"
+              width="100%"
+              height="100%"
+              class="border-0 rounded-2xl"
+              loading="lazy"
+            ></iframe>
+          </div>
+          <div id="map-parquimetros" class="w-full h-full hidden">
+            <iframe
+              src="https://www.google.com/maps/d/embed?mid=1t89zrYQ1x-0jAyc98lr1O_EZTs4&ehbc=2E312F"
+              width="100%"
+              height="100%"
+              class="border-0 rounded-2xl"
+              loading="lazy"
+            ></iframe>
+          </div>
+        </div>
+
+        <div
+          class="bg-white p-6 rounded-3xl shadow-lg border border-gray-100 mb-6"
+        >
+          <h3 class="text-xl font-bold mb-4 flex items-center">
+            <svg
+              class="h-6 w-6 mr-2 text-gray-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            Horarios
+          </h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div
+              class="bg-blue-50 p-5 rounded-2xl border border-blue-100 text-sm text-blue-800"
+            >
+              <p class="font-bold text-blue-900 mb-2 text-base">
+                ❄️ Invierno (15 Sep - 15 Jun)
+              </p>
+              L-V: 9:00-14:00, 16:30-20:30 <br />
+              Sáb: 9:00-14:00
+            </div>
+            <div
+              class="bg-orange-50 p-5 rounded-2xl border border-orange-100 text-sm text-orange-800"
+            >
+              <p class="font-bold text-orange-900 mb-2 text-base">
+                ☀️ Verano (16 Jun - 14 Sep)
+              </p>
+              L-V: 9:00-14:00, 17:00-21:00 <br />
+              Sáb: 9:00-14:00
+            </div>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6 mb-6">
+          <div
+            class="bg-white p-5 rounded-3xl shadow-lg border-t-8 border-blue-500 text-sm flex flex-col justify-between"
+          >
+            <div>
+              <div
+                class="flex justify-between font-bold text-lg text-gray-800 mb-3"
+              >
+                <h4>Zona Azul</h4>
+                <span
+                  class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded self-center"
+                  >2h Máx</span
+                >
+              </div>
+              <div class="mb-3">
+                <p class="font-bold text-xs uppercase text-gray-400 mb-1">
+                  No Residentes
+                </p>
+                <div
+                  class="flex justify-between text-gray-600 border-b border-gray-50 py-1"
+                >
+                  <span>30 min:</span>
+                  <span class="font-bold text-gray-900">0,55 €</span>
+                </div>
+                <div
+                  class="flex justify-between text-gray-600 border-b border-gray-50 py-1"
+                >
+                  <span>1 hora:</span>
+                  <span class="font-bold text-gray-900">0,90 €</span>
+                </div>
+                <div class="flex justify-between text-gray-600 py-1">
+                  <span>2 horas:</span>
+                  <span class="font-bold text-gray-900">1,80 €</span>
+                </div>
+              </div>
+              <div class="mb-3">
+                <p class="font-bold text-xs uppercase text-gray-400 mb-1">
+                  Residentes
+                </p>
+                <div class="flex justify-between text-gray-600">
+                  <span>1 día:</span>
+                  <span class="font-bold text-gray-900">1,05 €</span>
+                </div>
+              </div>
+            </div>
+            <div
+              class="pt-3 border-t border-gray-100 bg-red-50 -mx-5 -mb-5 p-4 rounded-b-2xl"
+            >
+              <p class="font-bold text-xs uppercase text-red-500 mb-2">
+                Tarifa Post-Pago (Anulación)
+              </p>
+              <div class="flex justify-between text-red-700 text-xs mb-1">
+                <span>Exceso < 30min:</span> <b>3,10 €</b>
+              </div>
+              <div class="flex justify-between text-red-700 text-xs">
+                <span>No ticket / > 30m:</span> <b>6,30 €</b>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="bg-white p-5 rounded-3xl shadow-lg border-t-8 border-green-500 text-sm flex flex-col justify-between"
+          >
+            <div>
+              <div
+                class="flex justify-between font-bold text-lg text-gray-800 mb-3"
+              >
+                <h4>Zona Verde</h4>
+                <span
+                  class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded self-center"
+                  >5h Máx</span
+                >
+              </div>
+              <div class="mb-3">
+                <p class="font-bold text-xs uppercase text-gray-400 mb-1">
+                  No Residentes
+                </p>
+                <div
+                  class="flex justify-between text-gray-600 border-b border-gray-50 py-1"
+                >
+                  <span>1 hora:</span>
+                  <span class="font-bold text-gray-900">0,70 €</span>
+                </div>
+                <div class="flex justify-between text-gray-600 py-1">
+                  <span>5 horas:</span>
+                  <span class="font-bold text-gray-900">1,45 €</span>
+                </div>
+              </div>
+              <div class="mb-3">
+                <p class="font-bold text-xs uppercase text-gray-400 mb-1">
+                  Residentes
+                </p>
+                <div class="flex justify-between text-gray-600">
+                  <span>1 día:</span>
+                  <span class="font-bold text-gray-900">1,05 €</span>
+                </div>
+              </div>
+            </div>
+            <div
+              class="pt-3 border-t border-gray-100 bg-red-50 -mx-5 -mb-5 p-4 rounded-b-2xl"
+            >
+              <p class="font-bold text-xs uppercase text-red-500 mb-2">
+                Tarifa Post-Pago (Anulación)
+              </p>
+              <div class="flex justify-between text-red-700 text-xs mb-1">
+                <span>Exceso < 30min:</span> <b>3,15 €</b>
+              </div>
+              <div class="flex justify-between text-red-700 text-xs">
+                <span>No ticket / > 30m:</span> <b>6,30 €</b>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="bg-white p-5 rounded-3xl shadow-lg border-t-8 border-red-500 text-sm flex flex-col justify-between"
+          >
+            <div>
+              <div
+                class="flex justify-between font-bold text-lg text-gray-800 mb-3"
+              >
+                <h4>Zona Roja</h4>
+                <span
+                  class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded self-center"
+                  >1h Máx</span
+                >
+              </div>
+              <div class="mb-3">
+                <p class="font-bold text-xs uppercase text-gray-400 mb-1">
+                  No Residentes
+                </p>
+                <div
+                  class="flex justify-between text-gray-600 border-b border-gray-50 py-1"
+                >
+                  <span>30 min:</span>
+                  <span class="font-bold text-gray-900">0,55 €</span>
+                </div>
+                <div class="flex justify-between text-gray-600 py-1">
+                  <span>1 hora:</span>
+                  <span class="font-bold text-gray-900">0,90 €</span>
+                </div>
+              </div>
+              <div class="mb-3">
+                <p class="font-bold text-xs uppercase text-gray-400 mb-1">
+                  Residentes
+                </p>
+                <div class="flex justify-between text-gray-600">
+                  <span>1 día:</span>
+                  <span class="font-bold text-gray-900">1,05 €</span>
+                </div>
+              </div>
+            </div>
+            <div
+              class="pt-3 border-t border-gray-100 bg-red-50 -mx-5 -mb-5 p-4 rounded-b-2xl"
+            >
+              <p class="font-bold text-xs uppercase text-red-500 mb-2">
+                Tarifa Post-Pago (Anulación)
+              </p>
+              <div class="flex justify-between text-red-700 text-xs mb-1">
+                <span>Exceso < 30min:</span> <b>3,10 €</b>
+              </div>
+              <div class="flex justify-between text-red-700 text-xs">
+                <span>No ticket / > 30m:</span> <b>6,15 €</b>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl shadow-lg border border-gray-100">
+          <h3 class="text-xl font-bold mb-4 flex items-center">
+            <svg
+              class="h-6 w-6 mr-2 text-gray-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+              />
+            </svg>
+            Listado de vías ORA
+          </h3>
+          <div
+            id="ora-streets-container"
+            class="max-h-96 overflow-y-auto custom-scrollbar pr-2"
+          ></div>
+        </div>
+      </div>
+
+      <div id="cortes-view" class="view-section">
+        <div class="flex items-center mb-6">
+          <button
+            onclick="navigateTo('home')"
+            class="mr-4 p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50 transition shadow-sm border border-gray-200"
+          >
+            <svg
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+          </button>
+          <h2 class="text-2xl font-bold">Cortes y Eventos</h2>
+        </div>
+
+        <div
+          class="bg-white p-2 rounded-3xl shadow-lg mb-6 border border-gray-100 overflow-hidden relative z-0"
+        >
+          <div id="map-cortes" class="w-full h-[400px] rounded-2xl z-0"></div>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl shadow-lg border border-gray-100">
+          <h3 class="text-xl font-bold mb-4 flex items-center">
+            <svg
+              class="h-6 w-6 mr-2 text-blue-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            Agenda (Últimos avisos)
+          </h3>
+          <div
+            id="cortes-lista-container"
+            class="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar pr-2"
+          >
+            <div class="text-center py-4 text-gray-500">Cargando datos...</div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div id="app" class="w-full p-4 sm:p-6 md:p-8 flex-grow max-w-7xl mx-auto z-10 relative">
+    <div
+      id="zbe-modal"
+      class="fixed inset-0 z-[100] bg-black/90 hidden flex items-center justify-center overflow-hidden touch-none transition-opacity duration-300 opacity-0"
+    >
+      <button
+        onclick="closeZbeModal()"
+        class="absolute top-4 right-4 z-[101] text-white bg-gray-800/50 p-3 rounded-full hover:bg-gray-700 transition"
+      >
+        <svg
+          class="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </button>
 
-        <header class="mb-8 pt-2 text-center border-b border-gray-200 pb-4">
-            <a href="#" onclick="event.preventDefault(); navigateTo('home')" class="inline-block transform hover:scale-105 transition duration-200">
-                <img src="imagenes/Logo.webp" onerror="this.src='https://via.placeholder.com/150?text=GranáGo'" alt="GranáGo Logo" class="h-16 w-auto object-contain">
-            </a>
-        </header>
+      <div
+        class="w-full h-full flex items-center justify-center overflow-hidden"
+      >
+        <img
+          id="zbe-modal-img"
+          src="imagenes/zbeMapa.webp"
+          class="max-w-none origin-center cursor-grab transition-transform duration-75 ease-linear will-change-transform"
+          draggable="false"
+          alt="Mapa ZBE Full"
+        />
+      </div>
 
-        <div id="home-view" class="view-section active">
-            <section>
-                <h2 class="text-xl font-semibold mb-6 text-center md:text-left">Servicios Principales</h2>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                    
-                    <div onclick="navigateTo('transporte')" class="service-card bg-white border border-gray-200 rounded-[1.25rem] cursor-pointer flex flex-col overflow-hidden shadow-lg group text-center">
-                        <div class="h-32 w-full overflow-hidden">
-                            <img src="imagenes/Transporte.webp" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=Bus+Metro'" class="h-full w-full object-cover group-hover:scale-110 transition duration-500">
-                        </div>
-                        <div class="p-4">
-                            <p class="font-extrabold text-lg leading-tight">TRANSPORTE EN TIEMPO REAL</p>
-                            <p class="text-xs text-gray-500 mt-1">Autobuses urbanos y Metro.</p>
-                        </div>
-                    </div>
-
-                    <div onclick="navigateTo('zbe')" class="service-card bg-white border border-gray-200 rounded-[1.25rem] cursor-pointer flex flex-col overflow-hidden shadow-lg group text-center">
-                        <div class="h-32 w-full overflow-hidden">
-                            <img src="imagenes/ZBE.webp" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=ZBE+Granada'" class="h-full w-full object-cover group-hover:scale-110 transition duration-500">
-                        </div>
-                        <div class="p-4">
-                            <p class="font-extrabold text-lg leading-tight">ZONA DE BAJAS EMISIONES</p>
-                            <p class="text-xs text-gray-500 mt-1">Plano, límites y normativa de la ZBE</p>
-                        </div>
-                    </div>
-
-                    <div onclick="navigateTo('ora')" class="service-card bg-white border border-gray-200 rounded-[1.25rem] cursor-pointer flex flex-col overflow-hidden shadow-lg group text-center">
-                        <div class="h-32 w-full overflow-hidden">
-                            <img src="imagenes/ORA.webp" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=ORA+Zona+Azul'" class="h-full w-full object-cover group-hover:scale-110 transition duration-500">
-                        </div>
-                        <div class="p-4">
-                            <p class="font-extrabold text-lg leading-tight">PARKING ORA</p>
-                            <p class="text-xs text-gray-500 mt-1">Zonas de Estacionamiento Limitado.</p>
-                        </div>
-                    </div>
-
-                    <div onclick="navigateTo('cortes')" class="service-card bg-white border border-gray-200 rounded-[1.25rem] cursor-pointer flex flex-col overflow-hidden shadow-lg group text-center">
-                        <div class="h-32 w-full overflow-hidden">
-                            <img src="imagenes/Eventos.webp" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=Obras+Trafico'" class="h-full w-full object-cover group-hover:scale-110 transition duration-500">
-                        </div>
-                        <div class="p-4">
-                            <p class="font-extrabold text-lg leading-tight">CORTES Y EVENTOS</p>
-                            <p class="text-xs text-gray-500 mt-1">Mapa con cortes actualizados.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <div id="transporte-view" class="view-section">
-            <div class="flex items-center mb-6">
-                <button onclick="navigateTo('home')" class="mr-4 p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50 transition shadow-sm border border-gray-200">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                </button>
-                <h2 class="text-2xl font-bold">Transporte Público</h2>
-            </div>
-            
-            <div id="map-transporte-container" class="bg-white p-2 rounded-3xl shadow-lg mb-6 border border-gray-100 overflow-hidden relative">
-                <div id="map-transporte" class="w-full h-[400px] rounded-2xl z-0"></div>
-                
-                <div class="controls-transporte absolute top-4 left-1/2 transform -translate-x-1/2 z-10 p-2 rounded-xl bg-white bg-opacity-90 shadow-xl border border-gray-200 flex space-x-2">
-                    
-                    <button id="btnUrbano" class="btn btn-urbano px-4 py-2 text-xs font-bold rounded-lg transition-colors duration-200 active-layer flex items-center" onclick="toggleLayer('urbano')">
-                        <svg class="h-5 w-5 mr-1 icon-transport" fill="currentColor" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4S4 2.5 4 6v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm-9-11c0-.55.45-1 1-1h8c.55 0 1 .45 1 1v4H6V6z"/></svg>
-                        Urbano
-                    </button>
-                    
-                    <button id="btnInter" class="btn btn-inter px-4 py-2 text-xs font-bold rounded-lg transition-colors duration-200 inactive-layer flex items-center" onclick="toggleLayer('inter')">
-                        <svg class="h-5 w-5 mr-1 icon-transport" fill="currentColor" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4S4 2.5 4 6v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm-9-11c0-.55.45-1 1-1h8c.55 0 1 .45 1 1v4H6V6z"/></svg>
-                        Interurbano
-                    </button>
-                    
-                    <button id="btnMetro" class="btn btn-metro px-4 py-2 text-xs font-bold rounded-lg transition-colors duration-200 inactive-layer flex items-center" onclick="toggleLayer('metro')">
-                        <svg class="h-5 w-5 mr-1 icon-transport" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c-4 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2.23l2-2H14l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-3.58-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-7H6V6h5v4zm2 0V6h5v4h-5zm3.5 7c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-                        Metro
-                    </button>
-                </div>
-            </div>
-            <div class="grid md:grid-cols-2 gap-6">
-                <section class="bg-white p-6 rounded-3xl shadow-lg border-t-4 border-red-600">
-                    <h2 class="text-xl font-bold mb-4 flex items-center">
-                        <span class="bg-red-100 p-2 rounded-lg mr-3">
-                            <svg class="h-6 w-6 text-red-600" fill="currentColor" viewBox="0 0 24 24"><path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4S4 2.5 4 6v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm-9-11c0-.55.45-1 1-1h8c.55 0 1 .45 1 1v4H6V6z"/></svg>
-                        </span>
-                        Localiza tu Bus
-                    </h2>
-                    <div class="space-y-3">
-                        <input type="number" id="stop-code" placeholder="Ej: 1300 (Código Parada)" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none transition" pattern="[0-9]*">
-                        <div id="bus-favorites" class="flex flex-wrap gap-2 empty:hidden animate-fade-in"></div>
-                        <button onclick="searchStop()" class="w-full bg-red-600 hover:bg-red-700 text-white p-3 rounded-xl font-bold transition shadow-md">BUSCAR BUSES</button>
-                    </div>
-                    <div id="bus-results" class="mt-4 space-y-3"></div>
-                </section>
-                
-                <section class="bg-white p-6 rounded-3xl shadow-lg border-t-4 border-green-600">
-                    <h2 class="text-xl font-bold mb-4 flex items-center">
-                        <span class="bg-green-100 p-2 rounded-lg mr-3">
-                            <svg class="h-6 w-6 text-green-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c-4 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2.23l2-2H14l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-3.58-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-7H6V6h5v4zm2 0V6h5v4h-5zm3.5 7c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-                        </span>
-                        Localiza tu Metro
-                    </h2>
-                    <div class="space-y-3">
-                        <select id="metro-stop-select" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:outline-none bg-white">
-                            <option value="">Cargando paradas...</option>
-                        </select>
-                        <div id="metro-favorites" class="flex flex-wrap gap-2 empty:hidden animate-fade-in"></div>
-                        <button onclick="searchMetroStop()" class="w-full bg-green-600 hover:bg-green-700 text-white p-3 rounded-xl font-bold transition shadow-md">BUSCAR METROS</button>
-                    </div>
-                    <div id="metro-results" class="mt-4 space-y-3"></div>
-                </section>
-            </div>
-        </div>
-
-        <div id="zbe-view" class="view-section">
-            <div class="flex items-center mb-6">
-                <button onclick="navigateTo('home')" class="mr-4 p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50 transition shadow-sm border border-gray-200">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                </button>
-                <h2 class="text-2xl font-bold">Zona de Bajas Emisiones (ZBE)</h2>
-            </div>
-
-            <div class="bg-white p-2 rounded-3xl shadow-lg mb-6 border border-gray-100 overflow-hidden">
-                <div id="zbe-map-container" onclick="openZbeModal()" class="w-full h-[300px] md:h-[500px] bg-gray-50 rounded-2xl relative overflow-hidden cursor-pointer group">
-                    <img id="zbe-map-img" src="imagenes/zbeMapa.webp" onerror="this.src='https://via.placeholder.com/800x600?text=Mapa+ZBE'" alt="Plano ZBE Vista Previa" class="w-full h-full object-contain pointer-events-none">
-                    
-                    <div class="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-xs backdrop-blur-sm pointer-events-none flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
-                        Toca para ampliar
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="bg-white rounded-3xl shadow-lg p-6 border-l-4 border-blue-500">
-                    <h3 class="text-lg font-bold mb-4 text-gray-800 dark:text-white">📍 Límites ZBE (23.55 km²)</h3>
-                    <ul class="text-sm space-y-3 text-gray-600 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
-                        <li>
-                            <span class="normativa-title text-blue-600">ZONA ESTE:</span>
-                            Camino del Sacromonte (Abadía incluida). Cruce Rte. El Caldero (control accesos Ctra. Murcia/Fargue).
-                        </li>
-                        
-                        <li>
-                            <span class="normativa-title text-blue-600">ZONA NORTE / ALFACAR:</span>
-                            Ciudad Deportiva <strong>INCLUIDA</strong>. Calles Pegaso y Merced Alta <strong>NO INCLUIDAS</strong>. Límite con Casería de los Cipreses.
-                        </li>
-
-                        <li>
-                            <span class="normativa-title text-blue-600">ZONA NOROESTE:</span>
-                            Avd. Blas de Otero, Lepanto, Racimos, El Jau y borde Parque Cronista Juan Burgos.
-                        </li>
-
-                        <li>
-                            <span class="normativa-title text-blue-600">ZONA OESTE:</span>
-                            Borde Parque Alquerías. Camino de Cañaveral, Parque F.G. Lorca y C/ Eudoxia Pririz <strong>INCLUIDOS</strong>.
-                            <br><em class="text-xs">Accesos Parking:</em> María Moliner y Prof. Luis Molina Gómez (Abiertos).
-                        </li>
-
-                        <li>
-                            <span class="normativa-title text-blue-600">ZONA SUR / SUROESTE:</span>
-                            Avd. Innovación <strong>INCLUIDA</strong>. Límite con Río Monachil.
-                            <br><em class="text-xs">No incluidas (Acceso Parking Los Cármenes):</em> Avd. Jesús Candel, Conocimiento, Torre Comares y Sultana.
-                        </li>
-
-                        <li>
-                            <span class="normativa-title text-blue-600">ZONA SURESTE / ALHAMBRA:</span>
-                            Término municipal incluido excepto Paseo de Cameros y Avd. Santa María de la Alhambra.
-                            <br><strong>NO INCLUIDOS:</strong> Patronato de la Alhambra y acceso al Cementerio.
-                        </li>
-
-                        <li>
-                            <span class="normativa-title text-red-500">VÍAS EXCLUIDAS (Rondas):</span>
-                            Circunvalación (GR-30), Ronda Sur (A-395) y Merced Alta (A-4006).
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="bg-white rounded-3xl shadow-lg p-6 border-l-4 border-green-500">
-                    <h3 class="text-lg font-bold mb-4">📋 Normativa</h3>
-                    <div class="space-y-4 text-sm">
-                        
-                        <div class="bg-green-50 p-4 rounded-xl border border-green-100">
-                            <p class="font-bold text-green-800 mb-1">✅ Vehículos Permitidos</p>
-                            <ul class="text-green-700 list-disc list-inside space-y-1">
-                                <li>Cualquier vehículo con etiqueta <strong>B, C, ECO y CERO</strong>.</li>
-                                <li>Vehículos con <strong>domicilio fiscal en Granada</strong> (Residentes), tengan o no etiqueta.</li>
-                            </ul>
-                        </div>
-
-                        <div class="bg-red-50 p-4 rounded-xl border border-red-100">
-                            <p class="font-bold text-red-800 mb-1">🚫 Vehículos Restringidos</p>
-                            <p class="text-red-700 mb-2">
-                                No pueden acceder los vehículos <strong>sin distintivo ambiental</strong> que <strong>NO</strong> tengan domicilio fiscal en Granada.
-                            </p>
-                            <p class="text-xs font-bold text-red-600 uppercase mb-1">Se consideran sin etiqueta:</p>
-                            <ul class="text-red-700 text-xs list-disc list-inside ml-1">
-                                <li>Gasolina anteriores a <strong>2001</strong>.</li>
-                                <li>Diésel anteriores a <strong>2006</strong>.</li>
-                            </ul>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="ora-view" class="view-section">
-            <div class="flex items-center mb-6">
-                <button onclick="navigateTo('home')" class="mr-4 p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50 transition shadow-sm border border-gray-200">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                </button>
-                <h2 class="text-2xl font-bold">Estacionamiento Regulado (ORA)</h2>
-            </div>
-            
-            <div class="flex justify-center mb-4">
-                <div class="bg-gray-100 p-1 rounded-xl flex space-x-1 shadow-inner">
-                    <button onclick="switchOraMap('vias')" id="btn-map-vias" class="px-6 py-2 rounded-lg text-sm font-bold transition-all shadow bg-white text-blue-600">Mapa de Vías</button>
-                    <button onclick="switchOraMap('parquimetros')" id="btn-map-parq" class="px-6 py-2 rounded-lg text-sm font-bold text-gray-500 hover:text-gray-700 transition-all">Mapa de Parquímetros</button>
-                </div>
-            </div>
-
-            <div class="bg-white p-2 rounded-3xl shadow-lg mb-6 border border-gray-100 overflow-hidden relative h-[500px]">
-                <div id="map-vias" class="w-full h-full block">
-                    <iframe src="https://www.google.com/maps/d/embed?mid=1CqNCPMeQZcKjz3jQmiJreTeBzSNl_EhZ&ehbc=2E312F" width="100%" height="100%" class="border-0 rounded-2xl" loading="lazy"></iframe>
-                </div>
-                <div id="map-parquimetros" class="w-full h-full hidden">
-                    <iframe src="https://www.google.com/maps/d/embed?mid=1t89zrYQ1x-0jAyc98lr1O_EZTs4&ehbc=2E312F" width="100%" height="100%" class="border-0 rounded-2xl" loading="lazy"></iframe>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-3xl shadow-lg border border-gray-100 mb-6">
-                <h3 class="text-xl font-bold mb-4 flex items-center">
-                    <svg class="h-6 w-6 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    Horarios
-                </h3>
-                <div class="grid md:grid-cols-2 gap-4">
-                    <div class="bg-blue-50 p-5 rounded-2xl border border-blue-100 text-sm text-blue-800">
-                        <p class="font-bold text-blue-900 mb-2 text-base">❄️ Invierno (15 Sep - 15 Jun)</p>
-                        L-V: 9:00-14:00, 16:30-20:30 <br> Sáb: 9:00-14:00
-                    </div>
-                    <div class="bg-orange-50 p-5 rounded-2xl border border-orange-100 text-sm text-orange-800">
-                        <p class="font-bold text-orange-900 mb-2 text-base">☀️ Verano (16 Jun - 14 Sep)</p>
-                        L-V: 9:00-14:00, 17:00-21:00 <br> Sáb: 9:00-14:00
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white p-5 rounded-3xl shadow-lg border-t-8 border-blue-500 text-sm flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between font-bold text-lg text-gray-800 mb-3"><h4>Zona Azul</h4><span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded self-center">2h Máx</span></div>
-                        <div class="mb-3">
-                            <p class="font-bold text-xs uppercase text-gray-400 mb-1">No Residentes</p>
-                            <div class="flex justify-between text-gray-600 border-b border-gray-50 py-1"><span>30 min:</span> <span class="font-bold text-gray-900">0,55 €</span></div>
-                            <div class="flex justify-between text-gray-600 border-b border-gray-50 py-1"><span>1 hora:</span> <span class="font-bold text-gray-900">0,90 €</span></div>
-                            <div class="flex justify-between text-gray-600 py-1"><span>2 horas:</span> <span class="font-bold text-gray-900">1,80 €</span></div>
-                        </div>
-                        <div class="mb-3">
-                            <p class="font-bold text-xs uppercase text-gray-400 mb-1">Residentes</p>
-                            <div class="flex justify-between text-gray-600"><span>1 día:</span> <span class="font-bold text-gray-900">1,05 €</span></div>
-                        </div>
-                    </div>
-                    <div class="pt-3 border-t border-gray-100 bg-red-50 -mx-5 -mb-5 p-4 rounded-b-2xl">
-                        <p class="font-bold text-xs uppercase text-red-500 mb-2">Tarifa Post-Pago (Anulación)</p>
-                        <div class="flex justify-between text-red-700 text-xs mb-1"><span>Exceso < 30min:</span> <b>3,10 €</b></div>
-                        <div class="flex justify-between text-red-700 text-xs"><span>No ticket / > 30m:</span> <b>6,30 €</b></div>
-                    </div>
-                </div>
-
-                <div class="bg-white p-5 rounded-3xl shadow-lg border-t-8 border-green-500 text-sm flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between font-bold text-lg text-gray-800 mb-3"><h4>Zona Verde</h4><span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded self-center">5h Máx</span></div>
-                        <div class="mb-3">
-                            <p class="font-bold text-xs uppercase text-gray-400 mb-1">No Residentes</p>
-                            <div class="flex justify-between text-gray-600 border-b border-gray-50 py-1"><span>1 hora:</span> <span class="font-bold text-gray-900">0,70 €</span></div>
-                            <div class="flex justify-between text-gray-600 py-1"><span>5 horas:</span> <span class="font-bold text-gray-900">1,45 €</span></div>
-                        </div>
-                        <div class="mb-3">
-                            <p class="font-bold text-xs uppercase text-gray-400 mb-1">Residentes</p>
-                            <div class="flex justify-between text-gray-600"><span>1 día:</span> <span class="font-bold text-gray-900">1,05 €</span></div>
-                        </div>
-                    </div>
-                    <div class="pt-3 border-t border-gray-100 bg-red-50 -mx-5 -mb-5 p-4 rounded-b-2xl">
-                        <p class="font-bold text-xs uppercase text-red-500 mb-2">Tarifa Post-Pago (Anulación)</p>
-                        <div class="flex justify-between text-red-700 text-xs mb-1"><span>Exceso < 30min:</span> <b>3,15 €</b></div>
-                        <div class="flex justify-between text-red-700 text-xs"><span>No ticket / > 30m:</span> <b>6,30 €</b></div>
-                    </div>
-                </div>
-
-                <div class="bg-white p-5 rounded-3xl shadow-lg border-t-8 border-red-500 text-sm flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between font-bold text-lg text-gray-800 mb-3"><h4>Zona Roja</h4><span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded self-center">1h Máx</span></div>
-                        <div class="mb-3">
-                            <p class="font-bold text-xs uppercase text-gray-400 mb-1">No Residentes</p>
-                            <div class="flex justify-between text-gray-600 border-b border-gray-50 py-1"><span>30 min:</span> <span class="font-bold text-gray-900">0,55 €</span></div>
-                            <div class="flex justify-between text-gray-600 py-1"><span>1 hora:</span> <span class="font-bold text-gray-900">0,90 €</span></div>
-                        </div>
-                        <div class="mb-3">
-                            <p class="font-bold text-xs uppercase text-gray-400 mb-1">Residentes</p>
-                            <div class="flex justify-between text-gray-600"><span>1 día:</span> <span class="font-bold text-gray-900">1,05 €</span></div>
-                        </div>
-                    </div>
-                    <div class="pt-3 border-t border-gray-100 bg-red-50 -mx-5 -mb-5 p-4 rounded-b-2xl">
-                        <p class="font-bold text-xs uppercase text-red-500 mb-2">Tarifa Post-Pago (Anulación)</p>
-                        <div class="flex justify-between text-red-700 text-xs mb-1"><span>Exceso < 30min:</span> <b>3,10 €</b></div>
-                        <div class="flex justify-between text-red-700 text-xs"><span>No ticket / > 30m:</span> <b>6,15 €</b></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-3xl shadow-lg border border-gray-100">
-                <h3 class="text-xl font-bold mb-4 flex items-center">
-                    <svg class="h-6 w-6 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                    Listado de vías ORA
-                </h3>
-                <div id="ora-streets-container" class="max-h-96 overflow-y-auto custom-scrollbar pr-2"></div>
-            </div>
-        </div>
-
-        <div id="cortes-view" class="view-section">
-            <div class="flex items-center mb-6">
-                <button onclick="navigateTo('home')" class="mr-4 p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50 transition shadow-sm border border-gray-200">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                </button>
-                <h2 class="text-2xl font-bold">Cortes y Eventos</h2>
-            </div>
-
-            <div class="bg-white p-2 rounded-3xl shadow-lg mb-6 border border-gray-100 overflow-hidden relative z-0">
-                <div id="map-cortes" class="w-full h-[400px] rounded-2xl z-0"></div>
-            </div>
-
-            <div class="bg-white p-6 rounded-3xl shadow-lg border border-gray-100">
-                <h3 class="text-xl font-bold mb-4 flex items-center">
-                    <svg class="h-6 w-6 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    Agenda (Últimos avisos)
-                </h3>
-                <div id="cortes-lista-container" class="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
-                    <div class="text-center py-4 text-gray-500">Cargando datos...</div>
-                </div>
-            </div>
-        </div>
-
+      <div
+        id="modal-instructions"
+        class="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white/70 text-sm bg-black/40 px-4 py-2 rounded-full pointer-events-none"
+      >
+        Usa dos dedos para zoom / Arrastra para mover
+      </div>
     </div>
 
-    <div id="zbe-modal" class="fixed inset-0 z-[100] bg-black/90 hidden flex items-center justify-center overflow-hidden touch-none transition-opacity duration-300 opacity-0">
-        <button onclick="closeZbeModal()" class="absolute top-4 right-4 z-[101] text-white bg-gray-800/50 p-3 rounded-full hover:bg-gray-700 transition">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-
-        <div class="w-full h-full flex items-center justify-center overflow-hidden">
-            <img id="zbe-modal-img" src="imagenes/zbeMapa.webp" class="max-w-none origin-center cursor-grab transition-transform duration-75 ease-linear will-change-transform" draggable="false" alt="Mapa ZBE Full">
-        </div>
-
-        <div id="modal-instructions" class="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white/70 text-sm bg-black/40 px-4 py-2 rounded-full pointer-events-none">
-            Usa dos dedos para zoom / Arrastra para mover
-        </div>
-    </div>
-
-    <footer class="w-full text-center py-6 text-xs text-gray-400 border-t border-gray-200 bg-white mt-8 z-10 relative">
-        © 2025 GranáGo. Todos los derechos reservados.
+    <footer
+      class="w-full text-center py-6 text-xs text-gray-400 border-t border-gray-200 bg-white mt-8 z-10 relative"
+    >
+      © 2025 GranáGo. Todos los derechos reservados.
     </footer>
 
     <script src="js/main.js" defer></script>
 
     <script>
-        const toggleButton = document.getElementById('theme-toggle');
-        const body = document.body;
+      const toggleButton = document.getElementById("theme-toggle");
+      const body = document.body;
 
-        // Función unificada para aplicar el tema
-        function setTheme(isDark) {
-            if (isDark) {
-                body.classList.add('dark-mode');
-                toggleButton.innerHTML = '☀️'; // Icono Sol
-                toggleButton.style.backgroundColor = '#333';
-                toggleButton.style.color = '#fff';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                body.classList.remove('dark-mode');
-                toggleButton.innerHTML = '🌙'; // Icono Luna
-                toggleButton.style.backgroundColor = '#fff';
-                toggleButton.style.color = '#333';
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        // 1. Cargar preferencia al iniciar
-        // Comprueba localStorage o preferencia del sistema si es la primera vez
-        const savedTheme = localStorage.getItem('theme');
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
-            setTheme(true);
+      // Función unificada para aplicar el tema
+      function setTheme(isDark) {
+        if (isDark) {
+          body.classList.add("dark-mode");
+          toggleButton.innerHTML = "☀️"; // Icono Sol
+          toggleButton.style.backgroundColor = "#333";
+          toggleButton.style.color = "#fff";
+          localStorage.setItem("theme", "dark");
         } else {
-            setTheme(false);
+          body.classList.remove("dark-mode");
+          toggleButton.innerHTML = "🌙"; // Icono Luna
+          toggleButton.style.backgroundColor = "#fff";
+          toggleButton.style.color = "#333";
+          localStorage.setItem("theme", "light");
         }
+      }
 
-        // 2. Evento Click
-        toggleButton.addEventListener('click', () => {
-            const isCurrentlyDark = body.classList.contains('dark-mode');
-            setTheme(!isCurrentlyDark); // Invertir estado
-        });
+      // 1. Cargar preferencia al iniciar
+      // Comprueba localStorage o preferencia del sistema si es la primera vez
+      const savedTheme = localStorage.getItem("theme");
+      const systemPrefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+
+      if (savedTheme === "dark" || (!savedTheme && systemPrefersDark)) {
+        setTheme(true);
+      } else {
+        setTheme(false);
+      }
+
+      // 2. Evento Click
+      toggleButton.addEventListener("click", () => {
+        const isCurrentlyDark = body.classList.contains("dark-mode");
+        setTheme(!isCurrentlyDark); // Invertir estado
+      });
     </script>
 
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('Service Worker registrado con éxito:', reg.scope))
-            .catch(err => console.log('Error al registrar SW:', err));
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("./sw.js")
+            .then((reg) =>
+              console.log("Service Worker registrado con éxito:", reg.scope)
+            )
+            .catch((err) => console.log("Error al registrar SW:", err));
         });
       }
     </script>
-</body>
+  </body>
 </html>
