@@ -20652,31 +20652,45 @@ function bindData(data, type) {
 
       // Acción para rellenar el select y buscar + Scroll a la zona de búsqueda
       const buttonAction = `
-                // 1. Cerrar popup
-                mapTransporte.closePopup();
+    // 1. Cerrar popup
+    mapTransporte.closePopup();
 
-                // 2. Buscar opción y seleccionar
-                const selectMetro = document.getElementById('metro-stop-select'); 
-                const options = Array.from(selectMetro.options);
-                const targetOption = options.find(opt => opt.text === '${stopName}');
-                
-                if (targetOption) {
-                    selectMetro.value = targetOption.value;
-                } else {
-                    console.error('Parada de metro no encontrada:', '${stopName}');
-                    return;
-                }
-                
-                // 3. Navegar inmediatamente
-                navigateTo('transporte'); 
+    // 2. Navegar a la vista de transporte (carga lazy de paradas)
+    navigateTo('transporte');
 
-                // 4. Esperar un poco y ejecutar la búsqueda/scroll
-                setTimeout(() => { 
-                    searchMetroStop(); 
-                    // Corregido el selector de scroll para que apunte a la sección contenedora del formulario
-                    scrollToElement('#transporte-view .grid'); 
-                }, 100); 
-            `;
+    // 3. Esperar a que el DOM y el select se rellenen, luego seleccionar y buscar
+    setTimeout(async () => {
+        const selectMetro = document.getElementById('metro-stop-select');
+        if (!selectMetro) {
+            console.error('Select metro no encontrado');
+            return;
+        }
+
+        // Si el select aún no está poblado, forzamos su carga
+        if (selectMetro.options.length <= 1) {
+            try {
+                await loadMetroStops();
+            } catch (e) {
+                console.error('Error cargando paradas de metro', e);
+            }
+        }
+
+        const options = Array.from(selectMetro.options);
+        // Usamos trim() por si hay espacios
+        const targetOption = options.find(opt => (opt.text || '').trim() === '${stopName}'.trim());
+
+        if (!targetOption) {
+            console.error('Parada de metro no encontrada:', '${stopName}');
+            return;
+        }
+
+        selectMetro.value = targetOption.value;
+
+        // Ejecutar la búsqueda y desplazar la vista al contenedor correcto
+        searchMetroStop();
+        scrollToElement('#transporte-view .grid');
+    }, 150);
+`;
 
       buttonHtml = `<button onclick="${buttonAction}" class="btn-ver-tiempos btn-metro mt-2">Ver Tiempos ${SVG_ICONS.lupa}</button>`;
 
