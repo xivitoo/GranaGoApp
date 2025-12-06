@@ -19930,6 +19930,15 @@ const ICONS = {
 // 3. LÓGICA DE NAVEGACIÓN Y ORA
 // ==========================================
 
+// Función auxiliar para hacer scroll a una sección
+function scrollToElement(selector) {
+    const element = document.querySelector(selector);
+    if (element) {
+        // En móviles, queremos que el elemento quede cerca de la parte superior
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
 window.navigateTo = function(viewId) {
     // Ocultar todas las vistas
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
@@ -20351,12 +20360,12 @@ function bindData(data, type) {
                 const stopCode = s.stop_code;
                 const stopCodeDisplay = stopCode ? `<p class="stop-code text-sm text-gray-500">Cód: <b>${stopCode}</b></p>` : '';
                 
-                // Redirecciona y ejecuta la búsqueda
+                // Redirecciona y ejecuta la búsqueda + Scroll a la zona de búsqueda
                 const buttonAction = `
                     const stopCodeInput = document.getElementById('stop-code'); 
                     stopCodeInput.value = '${stopCode}'; 
                     navigateTo('transporte'); 
-                    setTimeout(() => searchStop(), 100); 
+                    setTimeout(() => { searchStop(); scrollToElement('.grid.md:grid-cols-2.gap-6'); }, 100); 
                 `;
                 
                 buttonHtml = `<button onclick="${buttonAction}" class="btn-ver-tiempos btn-bus">Ver Tiempos ${SVG_ICONS.lupa}</button>`;
@@ -20372,7 +20381,7 @@ function bindData(data, type) {
             // Metro: Nombre de la parada, Botón Ver Tiempos
             const stopName = s.stop_name;
             
-            // Acción para rellenar el select y buscar
+            // Acción para rellenar el select y buscar + Scroll a la zona de búsqueda
             const buttonAction = `
                 const selectMetro = document.getElementById('metro-stop-select'); 
                 const options = Array.from(selectMetro.options);
@@ -20386,7 +20395,7 @@ function bindData(data, type) {
                 }
                 
                 navigateTo('transporte'); 
-                setTimeout(() => searchMetroStop(), 100); 
+                setTimeout(() => { searchMetroStop(); scrollToElement('.grid.md:grid-cols-2.gap-6'); }, 100); 
             `;
             
             buttonHtml = `<button onclick="${buttonAction}" class="btn-ver-tiempos btn-metro mt-2">Ver Tiempos ${SVG_ICONS.lupa}</button>`;
@@ -20476,8 +20485,8 @@ function createLocationControl() {
         }
     }
     
-    // Añadir el control al mapa
-    L.control.location({ position: 'topright' }).addTo(mapTransporte);
+    // Añadir el control al mapa en la posición inferior izquierda
+    L.control.location({ position: 'bottomleft' }).addTo(mapTransporte);
 }
 
 
@@ -20550,7 +20559,13 @@ window.initTransporteMap = function() {
             attribution: '© OpenStreetMap contributors'
         }).addTo(mapTransporte);
 
-        // Añadir el control de localización
+        // REPOSICIONAR CONTROL DE ZOOM A LA DERECHA INFERIOR
+        // 1. Eliminar el control de zoom predeterminado
+        if (mapTransporte.zoomControl) mapTransporte.zoomControl.remove();
+        // 2. Añadirlo de nuevo en la posición bottomright
+        L.control.zoom({ position: 'bottomright' }).addTo(mapTransporte);
+        
+        // Añadir el control de localización (será bottomleft)
         createLocationControl();
         
         // Cargar datos y crear capas
