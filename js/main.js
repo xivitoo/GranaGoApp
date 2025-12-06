@@ -20373,7 +20373,8 @@ function bindData(data, type) {
                         const stopCodeInput = document.getElementById('stop-code'); 
                         stopCodeInput.value = '${stopCode}'; 
                         searchStop(); 
-                        scrollToElement('.grid.md:grid-cols-2.gap-6'); 
+                        // Corregido el selector de scroll para que apunte a la sección contenedora del formulario
+                        scrollToElement('#transporte-view .grid.md:grid-cols-2.gap-6'); 
                     }, 100); 
                 `;
                 
@@ -20413,7 +20414,8 @@ function bindData(data, type) {
                 // 4. Esperar un poco y ejecutar la búsqueda/scroll
                 setTimeout(() => { 
                     searchMetroStop(); 
-                    scrollToElement('.grid.md:grid-cols-2.gap-6'); 
+                    // Corregido el selector de scroll para que apunte a la sección contenedora del formulario
+                    scrollToElement('#transporte-view .grid.md:grid-cols-2.gap-6'); 
                 }, 100); 
             `;
             
